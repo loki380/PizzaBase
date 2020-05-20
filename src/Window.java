@@ -3,10 +3,13 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
 
 public class Window extends JFrame implements ActionListener {
 
@@ -33,6 +36,10 @@ public class Window extends JFrame implements ActionListener {
     private JButton bPizza;
     private JButton bSauce;
     private JButton bCategory;
+    private JButton bNewDriver;
+    private JButton bEditDriver;
+    private JButton bDeleteDriver;
+    private ArrayList idList = new ArrayList();
 
     public Window() {
 
@@ -152,6 +159,35 @@ public class Window extends JFrame implements ActionListener {
         pRight.add(bBack);
         bg.add(pRight);
     }
+    private void setRightDriver(){
+        pRight.removeAll();
+
+        bNewDriver = new JButton("New Driver");
+        bNewDriver.setBounds(30,30,240,40);
+        bNewDriver.setBackground(new Color(0xBDBAA5));
+        bNewDriver.addActionListener(this);
+
+        bEditDriver = new JButton("Edit");
+        bEditDriver.setBounds(30,100,240,40);
+        bEditDriver.setBackground(new Color(0xBDBAA5));
+        bEditDriver.addActionListener(this);
+
+        bDeleteDriver = new JButton("Delete");
+        bDeleteDriver.setBounds(30,170,240,40);
+        bDeleteDriver.setBackground(new Color(0xBDBAA5));
+        bDeleteDriver.addActionListener(this);
+
+        bBack = new JButton("Back");
+        bBack.setBounds(30,240,240,40);
+        bBack.setBackground(new Color(0xBDBAA5));
+        bBack.addActionListener(this);
+
+        pRight.add(bNewDriver);
+        pRight.add(bEditDriver);
+        pRight.add(bDeleteDriver);
+        pRight.add(bBack);
+        bg.add(pRight);
+    }
     private void setRightMenu(){
 //        pRight.removeAll();
 //
@@ -210,9 +246,67 @@ public class Window extends JFrame implements ActionListener {
         validate();
     }
     private void showDetails(){
-        OrderDetails det = new OrderDetails();
-        det.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        det.setVisible(true);
+        OrderDetails frame = new OrderDetails();
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        frame.setVisible(true);
+    }
+    private void newOrder(){
+        newOrder frame = new newOrder();
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        frame.setVisible(true);
+    }
+    private void newDriver(){
+        newDriver frame = new newDriver(cn);
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        frame.setVisible(true);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                try {
+                    pLeft.remove(scrollPane);
+                    showTable("SELECT name as 'Name',surname as 'Surname', pesel as 'Pesel' FROM Driver ORDER BY name");
+                    storeId("SELECT idDriver FROM Driver ORDER BY name");
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+    }
+    private void editDriver() throws SQLException {
+        try{
+            int id = (int) idList.get(table.getSelectedRow());
+            editDriver frame = new editDriver(cn, id);
+            frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            frame.setVisible(true);
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    try {
+                        pLeft.remove(scrollPane);
+                        showTable("SELECT name as 'Name',surname as 'Surname', pesel as 'Pesel' FROM Driver ORDER BY name");
+                        storeId("SELECT idDriver FROM Driver ORDER BY name");
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+        }catch(IndexOutOfBoundsException ex){
+            JOptionPane.showMessageDialog(null,"You must choose driver", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void deleteDriver() throws SQLException {
+        Statement st = cn.createStatement();
+        try{
+            int id = (int) idList.get(table.getSelectedRow());
+            Integer choise = JOptionPane.showConfirmDialog(null,"Are you sure you want to delete this Driver?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+            if(choise==0) {
+                st.executeUpdate("DELETE FROM Driver WHERE idDriver=" + id);
+                showTable("SELECT name as 'Name',surname as 'Surname', pesel as 'Pesel' FROM Driver ORDER BY name");
+                storeId("SELECT idDriver FROM Driver ORDER BY name");
+            }
+        }catch(IndexOutOfBoundsException ex){
+            JOptionPane.showMessageDialog(null,"You must choose driver", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
     private void connect() throws SQLException, ClassNotFoundException {
         String name=nameField.getText();
@@ -228,6 +322,14 @@ public class Window extends JFrame implements ActionListener {
         }
         return password.toString();
     }
+    public void storeId(String query) throws SQLException {
+        idList.clear();
+        Statement statement = cn.createStatement();
+        ResultSet rs = statement.executeQuery(query);
+        while (rs.next()) {
+            idList.add(rs.getInt(1));
+        }
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
@@ -241,7 +343,7 @@ public class Window extends JFrame implements ActionListener {
                 validate();
             } catch (SQLException | ClassNotFoundException ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(null,"Nieprawidłowe hasło lub login", "Błąd", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(null,"Incorrect login or password", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }else if(z==bOrder){
             setBG();
@@ -257,6 +359,13 @@ public class Window extends JFrame implements ActionListener {
             setRightMenu();
         }else if(z==bDrivers){
             setBG();
+            setRightDriver();
+            try {
+                showTable("SELECT name as 'Name',surname as 'Surname', pesel as 'Pesel' FROM Driver ORDER BY name");
+                storeId("SELECT idDriver FROM Driver ORDER BY name");
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }else if(z==bIngredient){
             setBG();
         }else if(z==bExit){
@@ -266,6 +375,22 @@ public class Window extends JFrame implements ActionListener {
             setRightPanel();
         }else if(z==bDetails){
             showDetails();
+        }else if(z==bNewOrder){
+            newOrder();
+        }else if(z==bNewDriver){
+            newDriver();
+        }else if(z==bEditDriver){
+            try {
+                editDriver();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }else if(z==bDeleteDriver){
+            try {
+                deleteDriver();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 }
