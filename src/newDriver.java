@@ -23,8 +23,8 @@ public class newDriver extends JFrame implements ActionListener{
 
         cp = this.getContentPane();
         cp.setLayout(null);
-        buildPanel();
         this.cn=cn;
+        buildPanel();
     }
 
     private void buildPanel(){

@@ -73,9 +73,9 @@ public class editDriver extends JFrame implements ActionListener {
             if(surname.length()>0){
                 if(pesel.length()==11){
                     st.executeUpdate("UPDATE Driver SET " +
-                            "name='"+tfName.getText()+
-                            "', surname='"+tfSurname.getText()+
-                            "', pesel='"+tfPesel.getText()+
+                            "name='"+name+
+                            "', surname='"+surname+
+                            "', pesel='"+pesel+
                             "' WHERE idDriver="+id);
                     dispose();
                 }else{
