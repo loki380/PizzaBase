@@ -2,13 +2,15 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class editIngredient extends JFrame implements ActionListener {
+public class editIngredient extends JFrame implements ActionListener, KeyListener {
     private Container cp; //Main Panel
     private Integer id;
     private Connection cn;
@@ -22,7 +24,7 @@ public class editIngredient extends JFrame implements ActionListener {
     public editIngredient(Connection cn, Integer id) throws SQLException {
 
         setSize(300,300);
-        setTitle("Edit Driver");
+        setTitle("Edit Ingredient");
         setLocationRelativeTo(null);
         setResizable(false);
 
@@ -56,12 +58,13 @@ public class editIngredient extends JFrame implements ActionListener {
 
         tfName = new JTextField();
         tfName.setBounds(120,20,150,30);
+        tfName.addKeyListener(this);
         tfWeight = new JTextField();
         tfWeight.setBounds(120,70,150,30);
+        tfWeight.addKeyListener(this);
         tfPrice = new JTextField();
         tfPrice.setBounds(120,120,150,30);
-        cbSupp = new JComboBox();
-        cbSupp.setBounds(120,170,150,30);
+        tfPrice.addKeyListener(this);
         if(rs.next()) {
             tfName.setText(rs.getString(1));
             tfWeight.setText(rs.getString(2));
@@ -100,17 +103,62 @@ public class editIngredient extends JFrame implements ActionListener {
                 " WHERE idIngredient="+id);
         dispose();
     }
+    private boolean checkName(){
+        String name = tfName.getText();
+        if(name.matches("[a-zA-ZęółśążźćńĘÓŁŚĄŻŹĆŃ]*") && name.length()>0){
+            return true;
+        }else return false;
+    }
+    private boolean checkWeight(){
+        String name = tfWeight.getText();
+        if(name.matches("[0-9]+\\.*[0-9]*") && name.length()>0){
+            return true;
+        }else return false;
+    }
+    private boolean checkPrice(){
+        String name = tfPrice.getText();
+        if(name.matches("[0-9]+\\.*[0-9]*") && name.length()>0){
+            return true;
+        }else return false;
+    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         Object z = e.getSource();
         if(z==bEdit){
             try {
-                update();
+                boolean correct = checkName() && checkWeight() && checkPrice();
+                if(correct) update();
+                else JOptionPane.showMessageDialog(null,"Oops, you enter wrong values", "Error", JOptionPane.ERROR_MESSAGE);
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
         }
 
+    }
+
+    @Override
+    public void keyTyped(KeyEvent keyEvent) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent keyEvent) {
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent keyEvent) {
+        Object z = keyEvent.getSource();
+        if(z==tfName){
+            if(checkName()) tfName.setBackground(Color.GREEN);
+            else tfName.setBackground(Color.RED);
+        }else if(z==tfWeight){
+            if(checkWeight()) tfWeight.setBackground(Color.GREEN);
+            else tfWeight.setBackground(Color.RED);
+        }else if(z==tfPrice){
+            if(checkPrice()) tfPrice.setBackground(Color.GREEN);
+            else tfPrice.setBackground(Color.RED);
+        }
     }
 }

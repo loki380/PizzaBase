@@ -35,6 +35,8 @@ public class Window extends JFrame implements ActionListener {
     private JButton bBack;
     private JButton bExit;
     private JButton bNewPizza;
+    private JButton bEditPizza;
+    private JButton bDeletePizza;
     private JButton bSauce;
     private JButton bCategory;
     private JButton bNewDriver;
@@ -208,27 +210,33 @@ public class Window extends JFrame implements ActionListener {
     }
     // ------------- MENU PANEL
     private void setRightMenu(){
-//        pRight.removeAll();
-//
-//        bNewPizza = new JButton("New Order");
-//        bNewOrder.setBounds(30,30,240,40);
-//        bNewOrder.setBackground(new Color(0xBDBAA5));
-//        bNewOrder.addActionListener(this);
-//
-//        bHistoryOrder = new JButton("History Orders");
-//        bHistoryOrder.setBounds(30,100,240,40);
-//        bHistoryOrder.setBackground(new Color(0xBDBAA5));
-//        bHistoryOrder.addActionListener(this);
-//
-//        bBack = new JButton("Back");
-//        bBack.setBounds(30,170,240,40);
-//        bBack.setBackground(new Color(0xBDBAA5));
-//        bBack.addActionListener(this);
-//
-//        pRight.add(bNewOrder);
-//        pRight.add(bHistoryOrder);
-//        pRight.add(bBack);
-//        bg.add(pRight);
+        pRight.removeAll();
+
+        bNewPizza = new JButton("New Pizza");
+        bNewPizza.setBounds(30,30,240,40);
+        bNewPizza.setBackground(new Color(0xBDBAA5));
+        bNewPizza.addActionListener(this);
+
+        bEditPizza = new JButton("Edit");
+        bEditPizza.setBounds(30,100,240,40);
+        bEditPizza.setBackground(new Color(0xBDBAA5));
+        bEditPizza.addActionListener(this);
+
+        bDeletePizza = new JButton("Delete");
+        bDeletePizza.setBounds(30,170,240,40);
+        bDeletePizza.setBackground(new Color(0xBDBAA5));
+        bDeletePizza.addActionListener(this);
+
+        bBack = new JButton("Back");
+        bBack.setBounds(30,240,240,40);
+        bBack.setBackground(new Color(0xBDBAA5));
+        bBack.addActionListener(this);
+
+        pRight.add(bNewPizza);
+        pRight.add(bEditPizza);
+        pRight.add(bDeletePizza);
+        pRight.add(bBack);
+        bg.add(pRight);
     }
     // ------------- INGREDIENT PANEL
     private void setRightIng(){
@@ -331,10 +339,93 @@ public class Window extends JFrame implements ActionListener {
         frame.setVisible(true);
     }
     // ------------- ORDER CRUD
-    private void newOrder(){
-        newOrder frame = new newOrder();
+    private void newOrder() throws SQLException {
+        newOrder frame = new newOrder(cn);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                try {
+                    pLeft.remove(scrollPane);
+                    showTable("SELECT idOrder as 'Nr Order', Customer.name as 'Customer name', dateProduction as 'Date' " +
+                            "FROM Orderr inner join Customer " +
+                            "ON Customer_idCustomer=idCustomer " +
+                            "ORDER BY dateProduction DESC");
+                    storeId("SELECT idOrder FROM Orderr ORDER BY dateProduction DESC");
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+    }
+    // ------------- PIZZA CRUD
+    private void newPizza() throws SQLException {
+        newPizza frame = new newPizza(cn);
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        frame.setVisible(true);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                try {
+                    pLeft.remove(scrollPane);
+                    showTable("SELECT Pizza.name as 'Name', description as 'Description', Category.name as 'Category', price as 'Price'\n" +
+                            "FROM Pizza inner join Category\n" +
+                            "ON Category_idCategory=idCategory\n" +
+                            "ORDER BY Pizza.name");
+                    storeId("SELECT idPizza FROM Pizza ORDER BY name");
+                    validate();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+    }
+    private void editPizza() throws SQLException {
+        try {
+            int id = (int) idList.get(table.getSelectedRow());
+            editPizza frame = new editPizza(cn, id);
+            frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            frame.setVisible(true);
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    try {
+                        pLeft.remove(scrollPane);
+                        showTable("SELECT Pizza.name as 'Name', description as 'Description', Category.name as 'Category', price as 'Price'\n" +
+                                "FROM Pizza inner join Category\n" +
+                                "ON Category_idCategory=idCategory\n" +
+                                "ORDER BY Pizza.name");
+                        storeId("SELECT idPizza FROM Pizza ORDER BY name");
+                        validate();
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+        } catch(IndexOutOfBoundsException ex){
+            JOptionPane.showMessageDialog(null,"You must choose Ingredient", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void deletePizza() throws SQLException {
+        Statement st = cn.createStatement();
+        try{
+            int id = (int) idList.get(table.getSelectedRow());
+            Integer choise = JOptionPane.showConfirmDialog(null,"Are you sure you want to delete this Pizza?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+            if(choise==0) {
+                st.executeUpdate("DELETE FROM Pizza_has_Ingredient WHERE Pizza_idPizza=" + id);
+                st.executeUpdate("DELETE FROM Pizza WHERE idPizza=" + id);
+                pLeft.remove(scrollPane);
+                showTable("SELECT Pizza.name as 'Name', description as 'Description', Category.name as 'Category', price as 'Price'\n" +
+                        "FROM Pizza inner join Category\n" +
+                        "ON Category_idCategory=idCategory\n" +
+                        "ORDER BY Pizza.name");
+                storeId("SELECT idPizza FROM Pizza ORDER BY name");
+                validate();
+            }
+        }catch(IndexOutOfBoundsException ex){
+            JOptionPane.showMessageDialog(null,"You must choose Pizza", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
     // ------------- SUPPLIER CRUD
     private void newSupplier(){
@@ -355,22 +446,26 @@ public class Window extends JFrame implements ActionListener {
         });
     }
     private void editSupplier() throws SQLException {
-        int id = (int) idList.get(table.getSelectedRow());
-        editSupplier frame = new editSupplier(cn, id);
-        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        frame.setVisible(true);
-        frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosed(WindowEvent e) {
-                try {
-                    pLeft.remove(scrollPane);
-                    showTable("SELECT name as 'Name', (CONCAT(locality,' ',postcode)) as 'Locality', (CONCAT(street,' ',nrHouse)) as 'Street' FROM Supplier inner join Address ON Address_idAddress=idAddress ORDER BY name");
-                    storeId("SELECT idSupplier FROM Supplier ORDER BY name");
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
+        try {
+            int id = (int) idList.get(table.getSelectedRow());
+            editSupplier frame = new editSupplier(cn, id);
+            frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            frame.setVisible(true);
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    try {
+                        pLeft.remove(scrollPane);
+                        showTable("SELECT name as 'Name', (CONCAT(locality,' ',postcode)) as 'Locality', (CONCAT(street,' ',nrHouse)) as 'Street' FROM Supplier inner join Address ON Address_idAddress=idAddress ORDER BY name");
+                        storeId("SELECT idSupplier FROM Supplier ORDER BY name");
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
                 }
-            }
-        });
+            });
+        }catch(IndexOutOfBoundsException ex){
+            JOptionPane.showMessageDialog(null,"You must choose Supplier", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
     private void deleteSupplier() throws SQLException {
         Statement st = cn.createStatement();
@@ -546,7 +641,11 @@ public class Window extends JFrame implements ActionListener {
             setBG();
             setRightOrder();
             try {
-                showTable("SELECT idOrder,Customer_idCustomer, dateProduction FROM Orderr");
+                showTable("SELECT idOrder as 'Nr Order', Customer.name as 'Customer name', dateProduction as 'Date' " +
+                        "FROM Orderr inner join Customer " +
+                        "ON Customer_idCustomer=idCustomer " +
+                        "ORDER BY dateProduction DESC");
+                storeId("SELECT idOrder FROM Orderr ORDER BY dateProduction DESC");
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
@@ -554,6 +653,15 @@ public class Window extends JFrame implements ActionListener {
         }else if(z==bMenu){
             setBG();
             setRightMenu();
+            try {
+                showTable("SELECT Pizza.name as 'Name', description as 'Description', Category.name as 'Category', price as 'Price'\n" +
+                        "FROM Pizza inner join Category\n" +
+                        "ON Category_idCategory=idCategory\n" +
+                        "ORDER BY Pizza.name");
+                storeId("SELECT idPizza FROM Pizza ORDER BY name");
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }else if(z==bDrivers){
             setBG();
             setRightDriver();
@@ -591,10 +699,34 @@ public class Window extends JFrame implements ActionListener {
             setRightPanel();
         }
         //ORDER
-        else if(z==bDetails){
+        else if(z==bNewOrder){
+            try {
+                newOrder();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }else if(z==bDetails) {
             showDetails();
-        }else if(z==bNewOrder){
-            newOrder();
+        }
+        //MENU
+        else if(z==bNewPizza){
+            try {
+                newPizza();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }else if(z==bEditPizza){
+            try {
+                editPizza();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }else if(z==bDeletePizza){
+            try {
+                deletePizza();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
         //DRIVER
         else if(z==bNewDriver){
