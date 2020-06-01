@@ -14,7 +14,6 @@ public class BackgroundPanel extends JPanel{
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        //Wyrysowujesz zdjecie tak zeby zajelo caly obszar
         g.drawImage(imga, 0, 0,getWidth(), getHeight(), this);
     }
 }

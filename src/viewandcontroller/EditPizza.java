@@ -1,5 +1,7 @@
 package viewandcontroller;
 
+import models.Pizza;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -12,7 +14,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class editPizza extends JFrame implements ActionListener, KeyListener {
+public class EditPizza extends JFrame implements ActionListener, KeyListener {
     private Container cp; //Main Panel
     private Integer id;
     private Connection cn;
@@ -32,8 +34,9 @@ public class editPizza extends JFrame implements ActionListener, KeyListener {
     private JPanel pIng;
     private JScrollPane scrollPane;
     private Integer i=0;
+    Pizza pizza = new Pizza();
 
-    public editPizza(Connection cn, Integer id) throws SQLException {
+    public EditPizza(Connection cn, Integer id) throws SQLException {
 
         setSize(550,350);
         setTitle("Edit Pizza");
@@ -117,14 +120,20 @@ public class editPizza extends JFrame implements ActionListener, KeyListener {
 
 
         if(rs2.next()) {
-            tfName.setText(rs2.getString(1));
-            tfDescription.setText(rs2.getString(2));
+            pizza.setName(rs2.getString(1));
+            pizza.setDescription(rs2.getString(2));
+            pizza.setPrice(rs2.getString(7));
+            pizza.setIdCat(rs2.getInt(4));
+            pizza.setIdSize(rs2.getInt(6));
             cbCategory.addItem(rs2.getString(3));
             idCategory.add(rs2.getInt(4));
             cbSize.addItem(rs2.getString(5));
             idSize.add(rs2.getInt(6));
             tfPrice.setText(rs2.getString(7));
         }
+        tfName.setText(pizza.getName());
+        tfDescription.setText(pizza.getDescription());
+        tfPrice.setText(pizza.getPrice());
         if(rs.next()) {
             do{
                 idSize.add(rs.getInt(1));
@@ -176,21 +185,20 @@ public class editPizza extends JFrame implements ActionListener, KeyListener {
     }
     private void update() throws SQLException {
         Statement st = cn.createStatement();
-        String name = tfName.getText();
-        String description = tfDescription.getText();
-        String price = tfPrice.getText();
-        Integer size = idSize.get((cbSize.getSelectedIndex()));
-        Integer category = idCategory.get((cbCategory.getSelectedIndex()));
+        pizza.setName(tfName.getText());
+        pizza.setDescription(tfDescription.getText());
+        pizza.setPrice(tfPrice.getText());
+        pizza.setIdSize(idSize.get((cbSize.getSelectedIndex())));
+        pizza.setIdCat(idCategory.get((cbCategory.getSelectedIndex())));
         st.executeUpdate("UPDATE Pizza SET " +
-                "Category_idCategory="+category+
-                ", Size_idSize="+size+
-                ", name='"+name+
-                "',description='"+description+
-                "',price="+price+
+                "Category_idCategory="+pizza.getIdCat()+
+                ", Size_idSize="+pizza.getIdSize()+
+                ", name='"+pizza.getName()+
+                "',description='"+pizza.getDescription()+
+                "',price="+pizza.getPrice()+
                 " WHERE idPizza="+id);
         st.executeUpdate("DELETE FROM Pizza_has_Ingredient WHERE Pizza_idPizza="+id);
         for(JComboBox x: listIng){
-            System.out.println("ELO");
             Integer Ing = idIng.get((x.getSelectedIndex()));
             st.executeUpdate("INSERT INTO Pizza_has_Ingredient(Pizza_idPizza, Ingredient_idIngredient) VALUES" +
                     "("+id+
@@ -233,24 +241,6 @@ public class editPizza extends JFrame implements ActionListener, KeyListener {
         }
         validate();
     }
-    private boolean checkName(){
-        String name = tfName.getText();
-        if(name.matches("[a-zA-ZęółśążźćńĘÓŁŚĄŻŹĆŃ]*") && name.length()>0){
-            return true;
-        }else return false;
-    }
-    private boolean checkDes(){
-        String name = tfDescription.getText();
-        if(name.matches("[a-zA-Z0-9ęółśążźćńĘÓŁŚĄŻŹĆŃ ]*") && name.length()>0){
-            return true;
-        }else return false;
-    }
-    private boolean checkPrice(){
-        String name = tfPrice.getText();
-        if(name.matches("[0-9]+\\.*[0-9]*") && name.length()>0){
-            return true;
-        }else return false;
-    }
     public void storeid(String query) throws SQLException {
         idList.clear();
         Statement statement = cn.createStatement();
@@ -265,7 +255,7 @@ public class editPizza extends JFrame implements ActionListener, KeyListener {
         Object z = e.getSource();
         if(z==bEdit){
             try {
-                boolean correct = checkName() && checkDes() && checkPrice();
+                boolean correct = pizza.checkName() && pizza.checkDes() && pizza.checkPrice();
                 if(correct) update();
                 else JOptionPane.showMessageDialog(null,"Oops, you enter wrong values", "Error", JOptionPane.ERROR_MESSAGE);
             } catch (SQLException ex) {
@@ -302,13 +292,16 @@ public class editPizza extends JFrame implements ActionListener, KeyListener {
     public void keyReleased(KeyEvent keyEvent) {
         Object z = keyEvent.getSource();
         if(z==tfName){
-            if(checkName()) tfName.setBackground(Color.GREEN);
+            pizza.setName(tfName.getText());
+            if(pizza.checkName()) tfName.setBackground(Color.GREEN);
             else tfName.setBackground(Color.RED);
         }else if(z==tfDescription){
-            if(checkDes()) tfDescription.setBackground(Color.GREEN);
+            pizza.setDescription(tfDescription.getText());
+            if(pizza.checkDes()) tfDescription.setBackground(Color.GREEN);
             else tfDescription.setBackground(Color.RED);
         }else if(z==tfPrice){
-            if(checkPrice()) tfPrice.setBackground(Color.GREEN);
+            pizza.setPrice(tfPrice.getText());
+            if(pizza.checkPrice()) tfPrice.setBackground(Color.GREEN);
             else tfPrice.setBackground(Color.RED);
         }
     }

@@ -13,14 +13,14 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class newUser extends JFrame implements ActionListener, KeyListener {
+public class NewUser extends JFrame implements ActionListener, KeyListener {
     private Container cp; //Main Panel
     private Connection cn;
     private JTextField tfLogin;
     private JTextField tfPassoword;
     private JButton bAdd;
 
-    public newUser(Connection cn) throws SQLException {
+    public NewUser(Connection cn) throws SQLException {
 
         setSize(300,225);
         setTitle("New User");

@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class editOrder extends JFrame implements ActionListener {
+public class EditOrder extends JFrame implements ActionListener {
     private Container cp; //Main Panel
     private Connection cn;
     private JPanel pOrder;
@@ -39,7 +39,7 @@ public class editOrder extends JFrame implements ActionListener {
     private Integer id;
 
 
-    public editOrder(Connection cn, Integer id) throws SQLException {
+    public EditOrder(Connection cn, Integer id) throws SQLException {
 
         setSize(880,550);
         setTitle("Edit Order");

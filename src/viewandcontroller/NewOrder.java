@@ -1,9 +1,15 @@
 package viewandcontroller;
 
+import models.Address;
+import models.Customer;
+import models.Order;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,7 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
-public class newOrder extends JFrame implements ActionListener {
+public class NewOrder extends JFrame implements ActionListener, KeyListener {
     private Container cp; //Main Panel
     private Connection cn;
     private JPanel pOrder;
@@ -38,9 +44,11 @@ public class newOrder extends JFrame implements ActionListener {
     private ArrayList<JComboBox> listPizza = new ArrayList();
     private ArrayList<JTextField> listAmount = new ArrayList();
     private Integer i = 0;
+    Customer customer = new Customer();
+    Address adres = new Address();
+    Order order = new Order();
 
-
-    public newOrder(Connection cn) throws SQLException {
+    public NewOrder(Connection cn) throws SQLException {
 
         setSize(880,550);
         setTitle("New Order");
@@ -170,18 +178,25 @@ public class newOrder extends JFrame implements ActionListener {
 
         tfName = new JTextField();
         tfName.setBounds(150,70,200,30);
+        tfName.addKeyListener(this);
         tfSurname = new JTextField();
         tfSurname.setBounds(150,120,200,30);
+        tfSurname.addKeyListener(this);
         tfTel = new JTextField();
         tfTel.setBounds(150,170,200,30);
+        tfTel.addKeyListener(this);
         tfStreet = new JTextField();
         tfStreet.setBounds(150,220,200,30);
+        tfStreet.addKeyListener(this);
         tfnr = new JTextField();
         tfnr.setBounds(150,270,200,30);
+        tfnr.addKeyListener(this);
         tfCity = new JTextField();
         tfCity.setBounds(150,320,200,30);
+        tfCity.addKeyListener(this);
         tfPostcode = new JTextField();
         tfPostcode.setBounds(150,370,200,30);
+        tfPostcode.addKeyListener(this);
 
         pCustomer.add(lcustomer);
         pCustomer.add(lname);
@@ -201,24 +216,24 @@ public class newOrder extends JFrame implements ActionListener {
     }
     private void addOrder() throws SQLException {
         Statement st = cn.createStatement();
-        Integer driver = idDriver.get((cbDriver.getSelectedIndex()));
-        Integer sauce = idSauce.get((cbSauce.getSelectedIndex()));
+        order.setIdDriver(idDriver.get((cbDriver.getSelectedIndex())));
+        order.setIdSauce(idSauce.get((cbSauce.getSelectedIndex())));
         Date nowDate = new Date();
         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
-        String dateproduction = sdf1.format(nowDate);
-        String price = tfPriced.getText();
+        order.setData(sdf1.format(nowDate));
+        order.setPrice(tfPriced.getText());
         storeid("SELECT idCustomer FROM Customer ORDER BY idCustomer");
         int id=0;
         for(int c : idList){
             if(c>id) id=c;
         }
-
+        order.setIdCustomer(id);
         st.executeUpdate("INSERT INTO Orderr(Customer_idCustomer,Driver_idDriver,Sauce_idSauce,dateProduction,price_delivery) VALUES" +
-                "("+id+
-                ", "+driver+
-                ","+sauce+
-                ",'"+dateproduction+
-                "',"+price+")");
+                "("+order.getIdCustomer()+
+                ", "+order.getIdDriver()+
+                ","+order.getIdSauce()+
+                ",'"+order.getData()+
+                "',"+order.getPrice()+")");
         storeid("SELECT idOrder FROM Orderr ORDER BY idOrder");
         id=0;
         for(int c : idList){
@@ -238,37 +253,39 @@ public class newOrder extends JFrame implements ActionListener {
     }
     private void addCustomer() throws SQLException {
         Statement st = cn.createStatement();
-        String name = tfName.getText();
-        String surname = tfSurname.getText();
-        String tel = tfTel.getText();
-        String locality = tfCity.getText();
-        String postcode = tfPostcode.getText();
-        String street = tfStreet.getText();
+        customer.setName(tfName.getText());
+        customer.setSurname(tfSurname.getText());
+        customer.setTel(tfTel.getText());
+        adres.setLocality(tfCity.getText());
+        adres.setPostcode(tfPostcode.getText());
+        adres.setStreet(tfStreet.getText());
         String[] number = tfnr.getText().split("/");
-        String nrhouse = number[0];
+        adres.setNrHouse(number[0]);
         String nrflat;
         if(number.length==2) {
             nrflat = number[1];
         }else{
             nrflat=null;
         }
+        adres.setNrFlat(nrflat);
 
         st.executeUpdate("INSERT INTO Address(street,nrHouse,nrFlat,locality,postcode) VALUES" +
-                "('"+street+
-                "', "+nrhouse+
-                ","+nrflat+
-                ",'"+locality+"'" +
-                ",'"+postcode+"')");
+                "('"+adres.getStreet()+
+                "', "+adres.getNrHouse()+
+                ","+adres.getNrFlat()+
+                ",'"+adres.getLocality()+"'" +
+                ",'"+adres.getPostcode()+"')");
         storeid("SELECT idAddress FROM Address ORDER BY idAddress");
         int id=0;
         for(int c : idList){
             if(c>id) id=c;
         }
+        customer.setIdAdres(id);
         st.executeUpdate("INSERT INTO Customer(Address_idAddress,name,surname,tel) VALUES" +
-                "("+id+
-                ", '"+name+
-                "','"+surname+
-                "','"+tel+"')");
+                "("+customer.getIdAdres()+
+                ", '"+customer.getName()+
+                "','"+customer.getSurname()+
+                "','"+customer.getTel()+"')");
         dispose();
     }
     private void addPizza() throws SQLException {
@@ -310,10 +327,16 @@ public class newOrder extends JFrame implements ActionListener {
         Object z = e.getSource();
         if(z==bAdd){
             try {
-                addCustomer();
-                addOrder();
+                boolean correct = customer.checkName() && customer.checkSurname() && customer.checkTel() && order.checkPrice() && adres.checkLocality() && adres.checkPostcode() && adres.checkStreet() && adres.checkNrHouse() && adres.checkNrFlat();
+                if(correct){
+                    addCustomer();
+                    addOrder();
+                }
+                else JOptionPane.showMessageDialog(null,"Oops, you enter wrong values", "Error", JOptionPane.ERROR_MESSAGE);
             } catch (SQLException ex) {
                 ex.printStackTrace();
+            } catch (NullPointerException ex){
+                JOptionPane.showMessageDialog(null,"Oops, you enter wrong values", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }else if(z==bNext){
             try {
@@ -321,6 +344,55 @@ public class newOrder extends JFrame implements ActionListener {
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
+        }
+    }
+
+    @Override
+    public void keyTyped(KeyEvent keyEvent) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent keyEvent) {
+
+    }
+
+    @Override
+    public void keyReleased(KeyEvent keyEvent) {
+        Object z = keyEvent.getSource();
+        if(z==tfName){
+            customer.setName(tfName.getText());
+            if(customer.checkName()) tfName.setBackground(Color.GREEN);
+            else tfName.setBackground(Color.RED);
+        }else if(z==tfSurname){
+            customer.setSurname(tfSurname.getText());
+            if(customer.checkSurname()) tfSurname.setBackground(Color.GREEN);
+            else tfSurname.setBackground(Color.RED);
+        }else if(z==tfTel){
+            customer.setTel(tfTel.getText());
+            if(customer.checkTel()) tfTel.setBackground(Color.GREEN);
+            else tfTel.setBackground(Color.RED);
+        }else if(z==tfCity){
+            adres.setLocality(tfCity.getText());
+            if(adres.checkLocality()) tfCity.setBackground(Color.GREEN);
+            else tfCity.setBackground(Color.RED);
+        }else if(z==tfPostcode){
+            adres.setPostcode(tfPostcode.getText());
+            if(adres.checkPostcode()) tfPostcode.setBackground(Color.GREEN);
+            else tfPostcode.setBackground(Color.RED);
+        }else if(z==tfStreet){
+            adres.setStreet(tfStreet.getText());
+            if(adres.checkStreet()) tfStreet.setBackground(Color.GREEN);
+            else tfStreet.setBackground(Color.RED);
+        }else if(z==tfnr){
+            String[] number = tfnr.getText().split("/");
+            adres.setNrHouse(number[0]);
+            if(adres.checkNrHouse()) tfnr.setBackground(Color.GREEN);
+            else tfnr.setBackground(Color.RED);
+        }else if(z==tfPriced){
+            order.setPrice(tfPriced.getText());
+            if(order.checkPrice()) tfPriced.setBackground(Color.GREEN);
+            else tfPriced.setBackground(Color.RED);
         }
     }
 }

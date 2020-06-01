@@ -1,5 +1,7 @@
 package viewandcontroller;
 
+import models.Driver;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,7 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class editDriver extends JFrame implements ActionListener, KeyListener {
+public class EditDriver extends JFrame implements ActionListener, KeyListener {
     private Container cp; //Main Panel
     private Integer id;
     private Connection cn;
@@ -19,8 +21,9 @@ public class editDriver extends JFrame implements ActionListener, KeyListener {
     private JTextField tfName;
     private JTextField tfSurname;
     private JTextField tfPesel;
+    private Driver driver = new Driver();
 
-    public editDriver(Connection cn, Integer id) throws SQLException {
+    public EditDriver(Connection cn, Integer id) throws SQLException {
 
         setSize(300,300);
         setTitle("Edit Driver");
@@ -63,6 +66,10 @@ public class editDriver extends JFrame implements ActionListener, KeyListener {
         bEdit.setBounds(100,200,100,30);
         bEdit.addActionListener(this);
 
+        driver.setName(tfName.getText());
+        driver.setSurname(tfSurname.getText());
+        driver.setPesel(tfPesel.getText());
+
         cp.add(lname);
         cp.add(lsurname);
         cp.add(lpesel);
@@ -73,45 +80,13 @@ public class editDriver extends JFrame implements ActionListener, KeyListener {
     }
     private void update() throws SQLException {
         Statement st = cn.createStatement();
-        String name = tfName.getText();
-        String surname = tfSurname.getText();
-        String pesel = tfPesel.getText();
-        if(name.length()>0){
-            if(surname.length()>0){
-                if(pesel.length()==11){
-                    st.executeUpdate("UPDATE Driver SET " +
-                            "name='"+name+
-                            "', surname='"+surname+
-                            "', pesel='"+pesel+
-                            "' WHERE idDriver="+id);
-                    dispose();
-                }else{
-                    JOptionPane.showMessageDialog(null,"Pesel must consist of 11 figure", "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            }else{
-                JOptionPane.showMessageDialog(null,"Surname must consist of more than one character", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }else{
-            JOptionPane.showMessageDialog(null,"Name must consist of more than one character", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-    private boolean checkName(){
-        String name = tfName.getText();
-        if(name.matches("[A-Za-z]*") && name.length()>0){
-            return true;
-        }else return false;
-    }
-    private boolean checkSurName(){
-        String name = tfSurname.getText();
-        if(name.matches("[A-Za-z]*") && name.length()>0){
-            return true;
-        }else return false;
-    }
-    private boolean checkPesel(){
-        String pesel = tfPesel.getText();
-        if(pesel.matches("[0-9]{11}") && pesel.length()>0){
-            return true;
-        }else return false;
+        driver = new Driver(tfName.getText(),tfSurname.getText(), tfPesel.getText());
+        st.executeUpdate("UPDATE Driver SET " +
+                "name='"+driver.getName()+
+                "', surname='"+driver.getSurname()+
+                "', pesel='"+driver.getPesel()+
+                "' WHERE idDriver="+id);
+        dispose();
     }
 
     @Override
@@ -119,7 +94,7 @@ public class editDriver extends JFrame implements ActionListener, KeyListener {
         Object z = e.getSource();
         if(z==bEdit){
             try {
-                 boolean correct = checkName() && checkPesel() && checkSurName();
+                 boolean correct = driver.checkName() && driver.checkPesel() && driver.checkSurName();
                 if(correct) update();
                 else JOptionPane.showMessageDialog(null,"Oops, you enter wrong values", "Error", JOptionPane.ERROR_MESSAGE);
             } catch (SQLException ex) {
@@ -141,13 +116,16 @@ public class editDriver extends JFrame implements ActionListener, KeyListener {
     public void keyReleased(KeyEvent keyEvent) {
         Object z = keyEvent.getSource();
         if(z==tfName){
-            if(checkName()) tfName.setBackground(Color.GREEN);
+            driver.setName(tfName.getText());
+            if(driver.checkName()) tfName.setBackground(Color.GREEN);
             else tfName.setBackground(Color.RED);
         }else if(z==tfSurname){
-            if(checkSurName()) tfSurname.setBackground(Color.GREEN);
+            driver.setSurname(tfSurname.getText());
+            if(driver.checkSurName()) tfSurname.setBackground(Color.GREEN);
             else tfSurname.setBackground(Color.RED);
         }else if(z==tfPesel){
-            if(checkPesel()) tfPesel.setBackground(Color.GREEN);
+            driver.setPesel(tfPesel.getText());
+            if(driver.checkPesel()) tfPesel.setBackground(Color.GREEN);
             else tfPesel.setBackground(Color.RED);
         }
     }

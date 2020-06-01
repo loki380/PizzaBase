@@ -1,5 +1,8 @@
 package viewandcontroller;
 
+import models.Address;
+import models.Supplier;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -12,7 +15,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class newSupplier extends JFrame implements ActionListener, KeyListener {
+public class NewSupplier extends JFrame implements ActionListener, KeyListener {
     private Container cp; //Main Panel
     private Connection cn;
     private JButton bAdd;
@@ -23,8 +26,10 @@ public class newSupplier extends JFrame implements ActionListener, KeyListener {
     private JTextField tfNr;
     private JTextField tfNrFlat;
     private ArrayList<Integer> idList = new ArrayList();
+    Supplier supp = new Supplier();
+    Address adres = new Address();
 
-    public newSupplier(Connection cn) {
+    public NewSupplier(Connection cn) {
 
         setSize(300,400);
         setTitle("New Supplier");
@@ -90,39 +95,39 @@ public class newSupplier extends JFrame implements ActionListener, KeyListener {
     }
     private void addSupplier() throws SQLException {
         Statement st = cn.createStatement();
-        String name = tfName.getText();
-        String locality = tfLocality.getText();
-        String postcode = tfPostcode.getText();
-        String street = tfStreet.getText();
-        String nr = tfNr.getText();
-        String flat = tfNrFlat.getText();
-        if(flat.equals("")){
-            if(street.equals("")){
+        supp.setName(tfName.getText());
+        adres.setStreet(tfStreet.getText());
+        adres.setLocality(tfLocality.getText());
+        adres.setPostcode(tfPostcode.getText());
+        adres.setNrHouse(tfNr.getText());
+        adres.setNrFlat(tfNrFlat.getText());
+        if(adres.getNrFlat().equals("")){
+            if(adres.getStreet().equals("")){
                 st.executeUpdate("INSERT INTO Address(nrHouse,locality,postcode) VALUES" +
-                        "(" + nr +
-                        ", '" + locality +
-                        "', '" + postcode + "')");
+                        "(" + adres.getNrHouse() +
+                        ", '" + adres.getLocality() +
+                        "', '" + adres.getPostcode() + "')");
             }else{
                 st.executeUpdate("INSERT INTO Address(street,nrHouse,locality,postcode) VALUES" +
-                        "('" + street +
-                        "'," + nr +
-                        ", '" + locality +
-                        "', '" + postcode + "')");
+                        "('" + adres.getStreet() +
+                        "'," + adres.getNrHouse() +
+                        ", '" + adres.getLocality() +
+                        "', '" + adres.getPostcode() + "')");
             }
         }else {
-            if(street.equals("")){
+            if(adres.getStreet().equals("")){
                 st.executeUpdate("INSERT INTO Address(nrHouse,nrFlat,locality,postcode) VALUES" +
-                        "(" + nr +
-                        ", "+flat+
-                        ", '" + locality +
-                        "', '" + postcode + "')");
+                        "(" + adres.getNrHouse() +
+                        ", "+adres.getNrFlat()+
+                        ", '" + adres.getLocality() +
+                        "', '" + adres.getPostcode() + "')");
             }else{
                 st.executeUpdate("INSERT INTO Address(street,nrHouse,nrFlat,locality,postcode) VALUES" +
-                        "('" + street +
-                        "'," + nr +
-                        "," + flat +
-                        ", '" + locality +
-                        "', '" + postcode + "')");
+                        "('" + adres.getStreet() +
+                        "'," + adres.getNrHouse() +
+                        "," + adres.getNrFlat() +
+                        ", '" + adres.getLocality() +
+                        "', '" + adres.getPostcode() + "')");
             }
         }
         storeid("SELECT idAddress FROM Address ORDER BY idAddress");
@@ -130,9 +135,10 @@ public class newSupplier extends JFrame implements ActionListener, KeyListener {
         for(int c : idList){
             if(c>id) id=c;
         }
+        supp.setIdadres(id);
         st.executeUpdate("INSERT INTO Supplier(Address_idAddress, name) VALUES" +
-                "("+id+
-                ", '"+name+"')");
+                "("+supp.getIdadres()+
+                ", '"+supp.getName()+"')");
         dispose();
     }
     public void storeid(String query) throws SQLException {
@@ -143,49 +149,12 @@ public class newSupplier extends JFrame implements ActionListener, KeyListener {
             idList.add(rs.getInt(1));
         }
     }
-    private boolean checkName(){
-        String name = tfName.getText();
-        if(name.matches("[a-zA-ZęółśążźćńĘÓŁŚĄŻŹĆŃ]*") && name.length()>0){
-            return true;
-        }else return false;
-    }
-    private boolean checkLocality(){
-        String name = tfLocality.getText();
-        if(name.matches("[a-zA-ZęółśążźćńĘÓŁŚĄŻŹĆŃ]*") && name.length()>0){
-            return true;
-        }else return false;
-    }
-    private boolean checkPostcode(){
-        String name = tfPostcode.getText();
-        if(name.matches("[0-9][0-9]-[0-9][0-9][0-9]") && name.length()>0){
-            return true;
-        }else return false;
-    }
-    private boolean checkStreet(){
-        String name = tfStreet.getText();
-        if(name.matches("[a-zA-ZęółśążźćńĘÓŁŚĄŻŹĆŃ]*")){
-            return true;
-        }else return false;
-    }
-    private boolean checkNrHouse(){
-        String name = tfNr.getText();
-        if(name.matches("[0-9]*") && name.length()>0){
-            return true;
-        }else return false;
-    }
-    private boolean checkNrFlat(){
-        String name = tfNrFlat.getText();
-        if(name.matches("[0-9]*")){
-            return true;
-        }else return false;
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         Object z = e.getSource();
         if(z==bAdd){
             try {
-                boolean correct = checkName() && checkLocality() && checkPostcode() && checkStreet() && checkNrHouse();
+                boolean correct = supp.checkName() && adres.checkLocality() && adres.checkPostcode() && adres.checkStreet() && adres.checkNrHouse() && adres.checkNrFlat();
                 if(correct) addSupplier();
                 else JOptionPane.showMessageDialog(null,"Oops, you enter wrong values", "Error", JOptionPane.ERROR_MESSAGE);
             } catch (SQLException ex) {
@@ -208,22 +177,28 @@ public class newSupplier extends JFrame implements ActionListener, KeyListener {
     public void keyReleased(KeyEvent keyEvent) {
         Object z = keyEvent.getSource();
         if(z==tfName){
-            if(checkName()) tfName.setBackground(Color.GREEN);
+            supp.setName(tfName.getText());
+            if(supp.checkName()) tfName.setBackground(Color.GREEN);
             else tfName.setBackground(Color.RED);
         }else if(z==tfLocality){
-            if(checkLocality()) tfLocality.setBackground(Color.GREEN);
+            adres.setLocality(tfLocality.getText());
+            if(adres.checkLocality()) tfLocality.setBackground(Color.GREEN);
             else tfLocality.setBackground(Color.RED);
         }else if(z==tfPostcode){
-            if(checkPostcode()) tfPostcode.setBackground(Color.GREEN);
+            adres.setPostcode(tfPostcode.getText());
+            if(adres.checkPostcode()) tfPostcode.setBackground(Color.GREEN);
             else tfPostcode.setBackground(Color.RED);
         }else if(z==tfStreet){
-            if(checkStreet()) tfStreet.setBackground(Color.GREEN);
+            adres.setStreet(tfStreet.getText());
+            if(adres.checkStreet()) tfStreet.setBackground(Color.GREEN);
             else tfStreet.setBackground(Color.RED);
         }else if(z==tfNr){
-            if(checkNrHouse()) tfNr.setBackground(Color.GREEN);
+            adres.setNrHouse(tfNr.getText());
+            if(adres.checkNrHouse()) tfNr.setBackground(Color.GREEN);
             else tfNr.setBackground(Color.RED);
         }else if(z==tfNrFlat){
-            if(checkNrFlat()) tfNrFlat.setBackground(Color.GREEN);
+            adres.setNrFlat(tfNrFlat.getText());
+            if(adres.checkNrFlat()) tfNrFlat.setBackground(Color.GREEN);
             else tfNrFlat.setBackground(Color.RED);
         }
     }

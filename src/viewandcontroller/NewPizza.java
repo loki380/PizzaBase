@@ -1,5 +1,7 @@
 package viewandcontroller;
 
+import models.Pizza;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -12,7 +14,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class newPizza extends JFrame implements ActionListener, KeyListener {
+public class NewPizza extends JFrame implements ActionListener, KeyListener {
     private Container cp; //Main Panel
     private Connection cn;
     private JButton bAdd;
@@ -31,8 +33,9 @@ public class newPizza extends JFrame implements ActionListener, KeyListener {
     private JPanel pIng;
     private JScrollPane scrollPane;
     private Integer i=0;
+    Pizza pizza = new Pizza();
 
-    public newPizza(Connection cn) throws SQLException {
+    public NewPizza(Connection cn) throws SQLException {
 
         setSize(550,350);
         setTitle("New Pizza");
@@ -133,18 +136,18 @@ public class newPizza extends JFrame implements ActionListener, KeyListener {
     }
     private void addPizza() throws SQLException {
         Statement st = cn.createStatement();
-        String name = tfName.getText();
-        String description = tfDescription.getText();
-        String price = tfPrice.getText();
-        Integer size = idSize.get((cbSize.getSelectedIndex()));
-        Integer category = idCategory.get((cbCategory.getSelectedIndex()));
+        pizza.setName(tfName.getText());
+        pizza.setDescription(tfDescription.getText());
+        pizza.setPrice(tfPrice.getText());
+        pizza.setIdSize(idSize.get((cbSize.getSelectedIndex())));
+        pizza.setIdCat(idCategory.get((cbCategory.getSelectedIndex())));
 
         st.executeUpdate("INSERT INTO Pizza(Category_idCategory,Size_idSize,name,description,price) VALUES" +
-                "("+category+
-                ", "+size+
-                ",'"+name+
-                "','"+description+
-                "',"+price+
+                "("+pizza.getIdCat()+
+                ", "+pizza.getIdSize()+
+                ",'"+pizza.getName()+
+                "','"+pizza.getDescription()+
+                "',"+pizza.getPrice()+
                 ")");
         storeid("SELECT idPizza FROM Pizza ORDER BY idPizza");
         int id=0;
@@ -202,31 +205,13 @@ public class newPizza extends JFrame implements ActionListener, KeyListener {
         }
         validate();
     }
-    private boolean checkName(){
-        String name = tfName.getText();
-        if(name.matches("[a-zA-ZęółśążźćńĘÓŁŚĄŻŹĆŃ]*") && name.length()>0){
-            return true;
-        }else return false;
-    }
-    private boolean checkDes(){
-        String name = tfDescription.getText();
-        if(name.matches("[a-zA-Z0-9ęółśążźćńĘÓŁŚĄŻŹĆŃ]*") && name.length()>0){
-            return true;
-        }else return false;
-    }
-    private boolean checkPrice(){
-        String name = tfPrice.getText();
-        if(name.matches("[0-9]+\\.*[0-9]*") && name.length()>0){
-            return true;
-        }else return false;
-    }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         Object z = e.getSource();
         if(z==bAdd){
             try {
-                boolean correct = checkName() && checkDes() && checkPrice();
+                boolean correct = pizza.checkName() && pizza.checkDes() && pizza.checkPrice();
                 if(correct) addPizza();
                 else JOptionPane.showMessageDialog(null,"Oops, you enter wrong values", "Error", JOptionPane.ERROR_MESSAGE);
             } catch (SQLException ex) {
@@ -262,13 +247,16 @@ public class newPizza extends JFrame implements ActionListener, KeyListener {
     public void keyReleased(KeyEvent keyEvent) {
         Object z = keyEvent.getSource();
         if(z==tfName){
-            if(checkName()) tfName.setBackground(Color.GREEN);
+            pizza.setName(tfName.getText());
+            if(pizza.checkName()) tfName.setBackground(Color.GREEN);
             else tfName.setBackground(Color.RED);
         }else if(z==tfDescription){
-            if(checkDes()) tfDescription.setBackground(Color.GREEN);
+            pizza.setDescription(tfDescription.getText());
+            if(pizza.checkDes()) tfDescription.setBackground(Color.GREEN);
             else tfDescription.setBackground(Color.RED);
         }else if(z==tfPrice){
-            if(checkPrice()) tfPrice.setBackground(Color.GREEN);
+            pizza.setPrice(tfPrice.getText());
+            if(pizza.checkPrice()) tfPrice.setBackground(Color.GREEN);
             else tfPrice.setBackground(Color.RED);
         }
     }

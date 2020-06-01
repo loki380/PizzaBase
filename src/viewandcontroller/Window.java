@@ -40,6 +40,9 @@ public class Window extends JFrame implements ActionListener {
     private JButton bExit;
     private JButton bMore;
     private JButton bUsers;
+    private JButton bSize;
+    private JButton bSauce;
+    private JButton bCategory;
 
     private JButton bNewOrder;
     private JButton bEditOrder;
@@ -64,6 +67,18 @@ public class Window extends JFrame implements ActionListener {
     private JButton bNewSupplier;
     private JButton bEditSupplier;
     private JButton bDeleteSupplier;
+
+    private JButton bNewSize;
+    private JButton bEditSize;
+    private JButton bDeleteSize;
+
+    private JButton bNewSauce;
+    private JButton bEditSauce;
+    private JButton bDeleteSauce;
+
+    private JButton bNewCategory;
+    private JButton bEditCategory;
+    private JButton bDeleteCategory;
 
     private ArrayList idList = new ArrayList();
 
@@ -176,14 +191,30 @@ public class Window extends JFrame implements ActionListener {
         pRight.add(bMore);
         bg.add(pRight);
     }
+    // ------------- MORE MAIN PANEL
     private void moreRightPanel(){
         pRight = new JPanel();
         pRight.setBackground(new Color(0.0f, 0.0f, 0.0f, 0.5f));
         pRight.setBounds(550,50,300,450);
         pRight.setLayout(null);
 
+        bSize = new JButton("Size");
+        bSize.setBounds(30,30,240,40);
+        bSize.setBackground(new Color(0xBDBAA5));
+        bSize.addActionListener(this);
+
+        bSauce = new JButton("Sauce");
+        bSauce.setBounds(30,100,240,40);
+        bSauce.setBackground(new Color(0xBDBAA5));
+        bSauce.addActionListener(this);
+
+        bCategory = new JButton("Category");
+        bCategory.setBounds(30,170,240,40);
+        bCategory.setBackground(new Color(0xBDBAA5));
+        bCategory.addActionListener(this);
+
         bUsers = new JButton("Users");
-        bUsers.setBounds(30,30,240,40);
+        bUsers.setBounds(30,240,240,40);
         bUsers.setBackground(new Color(0xBDBAA5));
         bUsers.addActionListener(this);
 
@@ -197,6 +228,9 @@ public class Window extends JFrame implements ActionListener {
         bExit.setBackground(new Color(0xBDBAA5));
         bExit.addActionListener(this);
 
+        pRight.add(bCategory);
+        pRight.add(bSauce);
+        pRight.add(bSize);
         pRight.add(bUsers);
         pRight.add(bBack);
         pRight.add(bExit);
@@ -383,6 +417,96 @@ public class Window extends JFrame implements ActionListener {
         pRight.add(bBack);
         bg.add(pRight);
     }
+    // ------------- SIZE PANEL
+    private void setRightSize(){
+        pRight.removeAll();
+
+        bNewSize = new JButton("New Size");
+        bNewSize.setBounds(30,30,240,40);
+        bNewSize.setBackground(new Color(0xBDBAA5));
+        bNewSize.addActionListener(this);
+
+        bEditSize = new JButton("Edit Size");
+        bEditSize.setBounds(30,100,240,40);
+        bEditSize.setBackground(new Color(0xBDBAA5));
+        bEditSize.addActionListener(this);
+
+        bDeleteSize = new JButton("Delete");
+        bDeleteSize.setBounds(30,170,240,40);
+        bDeleteSize.setBackground(new Color(0xBDBAA5));
+        bDeleteSize.addActionListener(this);
+
+        bBack = new JButton("Back");
+        bBack.setBounds(30,240,240,40);
+        bBack.setBackground(new Color(0xBDBAA5));
+        bBack.addActionListener(this);
+
+        pRight.add(bNewSize);
+        pRight.add(bEditSize);
+        pRight.add(bDeleteSize);
+        pRight.add(bBack);
+        bg.add(pRight);
+    }
+    // ------------- SAUCE PANEL
+    private void setRightSauce(){
+        pRight.removeAll();
+
+        bNewSauce = new JButton("New Sauce");
+        bNewSauce.setBounds(30,30,240,40);
+        bNewSauce.setBackground(new Color(0xBDBAA5));
+        bNewSauce.addActionListener(this);
+
+        bEditSauce = new JButton("Edit Sauce");
+        bEditSauce.setBounds(30,100,240,40);
+        bEditSauce.setBackground(new Color(0xBDBAA5));
+        bEditSauce.addActionListener(this);
+
+        bDeleteSauce = new JButton("Delete");
+        bDeleteSauce.setBounds(30,170,240,40);
+        bDeleteSauce.setBackground(new Color(0xBDBAA5));
+        bDeleteSauce.addActionListener(this);
+
+        bBack = new JButton("Back");
+        bBack.setBounds(30,240,240,40);
+        bBack.setBackground(new Color(0xBDBAA5));
+        bBack.addActionListener(this);
+
+        pRight.add(bNewSauce);
+        pRight.add(bEditSauce);
+        pRight.add(bDeleteSauce);
+        pRight.add(bBack);
+        bg.add(pRight);
+    }
+    // ------------- CATEGORY PANEL
+    private void setRightCategory(){
+        pRight.removeAll();
+
+        bNewCategory = new JButton("New Category");
+        bNewCategory.setBounds(30,30,240,40);
+        bNewCategory.setBackground(new Color(0xBDBAA5));
+        bNewCategory.addActionListener(this);
+
+        bEditCategory = new JButton("Edit Category");
+        bEditCategory.setBounds(30,100,240,40);
+        bEditCategory.setBackground(new Color(0xBDBAA5));
+        bEditCategory.addActionListener(this);
+
+        bDeleteCategory = new JButton("Delete");
+        bDeleteCategory.setBounds(30,170,240,40);
+        bDeleteCategory.setBackground(new Color(0xBDBAA5));
+        bDeleteCategory.addActionListener(this);
+
+        bBack = new JButton("Back");
+        bBack.setBounds(30,240,240,40);
+        bBack.setBackground(new Color(0xBDBAA5));
+        bBack.addActionListener(this);
+
+        pRight.add(bNewCategory);
+        pRight.add(bEditCategory);
+        pRight.add(bDeleteCategory);
+        pRight.add(bBack);
+        bg.add(pRight);
+    }
     // ------------- FUNCTION TO CREATE TABLE WITH DATA
     private void showTable(String query) throws SQLException {
         Statement st = cn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
@@ -420,7 +544,7 @@ public class Window extends JFrame implements ActionListener {
     }
     // ------------- ORDER CRUD
     private void newOrder() throws SQLException {
-        newOrder frame = new newOrder(cn);
+        NewOrder frame = new NewOrder(cn);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
         frame.addWindowListener(new WindowAdapter() {
@@ -442,7 +566,7 @@ public class Window extends JFrame implements ActionListener {
     private void editOrder() throws SQLException {
         try {
             int id = (int) idList.get(table.getSelectedRow());
-            editOrder frame = new editOrder(cn, id);
+            EditOrder frame = new EditOrder(cn, id);
             frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             frame.setVisible(true);
             frame.addWindowListener(new WindowAdapter() {
@@ -468,7 +592,7 @@ public class Window extends JFrame implements ActionListener {
     private void detailsOrder() throws SQLException {
         try {
             int id = (int) idList.get(table.getSelectedRow());
-            detailsOrder frame = new detailsOrder(cn, id);
+            DetailsOrder frame = new DetailsOrder(cn, id);
             frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             frame.setVisible(true);
             frame.addWindowListener(new WindowAdapter() {
@@ -513,7 +637,7 @@ public class Window extends JFrame implements ActionListener {
     }
     // ------------- PIZZA CRUD
     private void newPizza() throws SQLException {
-        newPizza frame = new newPizza(cn);
+        NewPizza frame = new NewPizza(cn);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
         frame.addWindowListener(new WindowAdapter() {
@@ -536,7 +660,7 @@ public class Window extends JFrame implements ActionListener {
     private void editPizza() throws SQLException {
         try {
             int id = (int) idList.get(table.getSelectedRow());
-            editPizza frame = new editPizza(cn, id);
+            EditPizza frame = new EditPizza(cn, id);
             frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             frame.setVisible(true);
             frame.addWindowListener(new WindowAdapter() {
@@ -582,7 +706,7 @@ public class Window extends JFrame implements ActionListener {
     private void detailsPizza() throws SQLException {
         try {
             int id = (int) idList.get(table.getSelectedRow());
-            detailsPizza frame = new detailsPizza(cn, id);
+            DetailsPizza frame = new DetailsPizza(cn, id);
             frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             frame.setVisible(true);
             frame.addWindowListener(new WindowAdapter() {
@@ -607,7 +731,7 @@ public class Window extends JFrame implements ActionListener {
     }
     // ------------- SUPPLIER CRUD
     private void newSupplier(){
-        newSupplier frame = new newSupplier(cn);
+        NewSupplier frame = new NewSupplier(cn);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
         frame.addWindowListener(new WindowAdapter() {
@@ -626,7 +750,7 @@ public class Window extends JFrame implements ActionListener {
     private void editSupplier() throws SQLException {
         try {
             int id = (int) idList.get(table.getSelectedRow());
-            editSupplier frame = new editSupplier(cn, id);
+            EditSupplier frame = new EditSupplier(cn, id);
             frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             frame.setVisible(true);
             frame.addWindowListener(new WindowAdapter() {
@@ -661,7 +785,7 @@ public class Window extends JFrame implements ActionListener {
     }
     // ------------- DRIVER CRUD
     private void newDriver(){
-        newDriver frame = new newDriver(cn);
+        NewDriver frame = new NewDriver(cn);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
         frame.addWindowListener(new WindowAdapter() {
@@ -680,7 +804,7 @@ public class Window extends JFrame implements ActionListener {
     private void editDriver() throws SQLException {
         try{
             int id = (int) idList.get(table.getSelectedRow());
-            editDriver frame = new editDriver(cn, id);
+            EditDriver frame = new EditDriver(cn, id);
             frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             frame.setVisible(true);
             frame.addWindowListener(new WindowAdapter() {
@@ -715,7 +839,7 @@ public class Window extends JFrame implements ActionListener {
     }
     // ------------- INGREDIENT CRUD
     private void newIngredient() throws SQLException {
-        newIngredient frame = new newIngredient(cn);
+        NewIngredient frame = new NewIngredient(cn);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
         frame.addWindowListener(new WindowAdapter() {
@@ -736,7 +860,7 @@ public class Window extends JFrame implements ActionListener {
     private void editIngredient() throws SQLException {
         try{
             int id = (int) idList.get(table.getSelectedRow());
-            editIngredient frame = new editIngredient(cn, id);
+            EditIngredient frame = new EditIngredient(cn, id);
             frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
             frame.setVisible(true);
             frame.addWindowListener(new WindowAdapter() {
@@ -775,7 +899,7 @@ public class Window extends JFrame implements ActionListener {
     }
     // ------------- USERS CRUD
     private void newUser() throws SQLException {
-        newUser frame = new newUser(cn);
+        NewUser frame = new NewUser(cn);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setVisible(true);
         frame.addWindowListener(new WindowAdapter() {
@@ -791,6 +915,171 @@ public class Window extends JFrame implements ActionListener {
             }
         });
     }
+    // ------------- SIZE CRUD
+    private void newSize() throws SQLException {
+        NewSize frame = new NewSize(cn);
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        frame.setVisible(true);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                try {
+                    pLeft.remove(scrollPane);
+                    showTable("SELECT name, diameter FROM Size ORDER BY name");
+                    storeId("SELECT idSize FROM Size ORDER BY name");
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+    }
+    private void editSize() throws SQLException {
+        try{
+            int id = (int) idList.get(table.getSelectedRow());
+            EditSize frame = new EditSize(cn, id);
+            frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            frame.setVisible(true);
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    try {
+                        pLeft.remove(scrollPane);
+                        showTable("SELECT name, diameter FROM Size ORDER BY name");
+                        storeId("SELECT idSize FROM Size ORDER BY name");
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+        }catch(IndexOutOfBoundsException ex){
+            JOptionPane.showMessageDialog(null,"You must choose Size", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void deleteSize() throws SQLException {
+        Statement st = cn.createStatement();
+        try{
+            int id = (int) idList.get(table.getSelectedRow());
+            Integer choise = JOptionPane.showConfirmDialog(null,"Are you sure you want to delete this Size?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+            if(choise==0) {
+                st.executeUpdate("DELETE FROM Size WHERE idSize=" + id);
+                showTable("SELECT name, diameter FROM Size ORDER BY name");
+                storeId("SELECT idSize FROM Size ORDER BY name");
+            }
+        }catch(IndexOutOfBoundsException ex){
+            JOptionPane.showMessageDialog(null,"You must choose Size", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    // ------------- SAUCE CRUD
+    private void newSauce() throws SQLException {
+        NewSauce frame = new NewSauce(cn);
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        frame.setVisible(true);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                try {
+                    pLeft.remove(scrollPane);
+                    showTable("SELECT name, price FROM Sauce ORDER BY name");
+                    storeId("SELECT idSauce FROM Sauce ORDER BY name");
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+    }
+    private void editSauce() throws SQLException {
+        try{
+            int id = (int) idList.get(table.getSelectedRow());
+            EditSauce frame = new EditSauce(cn, id);
+            frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            frame.setVisible(true);
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    try {
+                        pLeft.remove(scrollPane);
+                        showTable("SELECT name, price FROM Sauce ORDER BY name");
+                        storeId("SELECT idSauce FROM Sauce ORDER BY name");
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+        }catch(IndexOutOfBoundsException ex){
+            JOptionPane.showMessageDialog(null,"You must choose Sauce", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void deleteSauce() throws SQLException {
+        Statement st = cn.createStatement();
+        try{
+            int id = (int) idList.get(table.getSelectedRow());
+            Integer choise = JOptionPane.showConfirmDialog(null,"Are you sure you want to delete this Sauce?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+            if(choise==0) {
+                st.executeUpdate("DELETE FROM Sauce WHERE idSauce=" + id);
+                showTable("SELECT name, price FROM Sauce ORDER BY name");
+                storeId("SELECT idSauce FROM Sauce ORDER BY name");
+            }
+        }catch(IndexOutOfBoundsException ex){
+            JOptionPane.showMessageDialog(null,"You must choose Sauce", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    // ------------- CATEGORY CRUD
+    private void newCategory() throws SQLException {
+        NewCategory frame = new NewCategory(cn);
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        frame.setVisible(true);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosed(WindowEvent e) {
+                try {
+                    pLeft.remove(scrollPane);
+                    showTable("SELECT name FROM Category ORDER BY name");
+                    storeId("SELECT idCategory FROM Category ORDER BY name");
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+    }
+    private void editCategory() throws SQLException {
+        try{
+            int id = (int) idList.get(table.getSelectedRow());
+            EditCategory frame = new EditCategory(cn, id);
+            frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            frame.setVisible(true);
+            frame.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    try {
+                        pLeft.remove(scrollPane);
+                        showTable("SELECT name FROM Category ORDER BY name");
+                        storeId("SELECT idCategory FROM Category ORDER BY name");
+                    } catch (SQLException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            });
+        }catch(IndexOutOfBoundsException ex){
+            JOptionPane.showMessageDialog(null,"You must choose Category", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    private void deleteCategory() throws SQLException {
+        Statement st = cn.createStatement();
+        try{
+            int id = (int) idList.get(table.getSelectedRow());
+            Integer choise = JOptionPane.showConfirmDialog(null,"Are you sure you want to delete this Category?", "Confirm Deletion", JOptionPane.YES_NO_OPTION);
+            if(choise==0) {
+                st.executeUpdate("DELETE FROM Category WHERE idCategory=" + id);
+                showTable("SELECT name FROM Category ORDER BY name");
+                storeId("SELECT idCategory FROM Category ORDER BY name");
+            }
+        }catch(IndexOutOfBoundsException ex){
+            JOptionPane.showMessageDialog(null,"You must choose Category", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
     // ------------- CONNECT WITH SQL
     private void connect() throws SQLException, ClassNotFoundException {
         cn = DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=master;", "sa", "kamil99");
@@ -799,20 +1088,14 @@ public class Window extends JFrame implements ActionListener {
     // ------------- CHECK LOGIN AND PASSWORD
     private boolean checklogindata() throws SQLException, NoSuchAlgorithmException {
         Statement st = cn.createStatement();
-        String name=nameField.getText();
-        String password=getPassword();
-        User user = new User(name, password);
+        User user = new User(nameField.getText(), getPassword());
         ResultSet rs = st.executeQuery("SELECT Password FROM Users WHERE Login='"+user.getLogin()+"'");
         if(rs.next()){
             String hash=rs.getString(1);
             String hash1= User.generateHash(user.getPassword());
-            System.out.println(hash);
-            System.out.println(hash1);
             if(hash.equals(hash1)){
-                System.out.println("TAK");
                 return true;
             }else{
-                System.out.println("NIE");
                 return false;
             }
         }else return false;
@@ -928,6 +1211,33 @@ public class Window extends JFrame implements ActionListener {
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }
+        }else if(z==bSize){
+            setBG();
+            setRightSize();
+            try {
+                showTable("SELECT name, diameter FROM Size ORDER BY name");
+                storeId("SELECT idSize FROM Size ORDER BY name");
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }else if(z==bSauce){
+            setBG();
+            setRightSauce();
+            try {
+                showTable("SELECT name, price FROM Sauce ORDER BY name");
+                storeId("SELECT idSauce FROM Sauce ORDER BY name");
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }else if(z==bCategory){
+            setBG();
+            setRightCategory();
+            try {
+                showTable("SELECT name FROM Category ORDER BY name");
+                storeId("SELECT idCategory FROM Category ORDER BY name");
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
         //USERS
         else if(z==bNewUser){
@@ -1037,6 +1347,66 @@ public class Window extends JFrame implements ActionListener {
         }else if(z==bDeleteIngredient){
             try {
                 deleteIngredient();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+        //SIZE
+        else if(z==bNewSize){
+            try {
+                newSize();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }else if(z==bEditSize){
+            try {
+                editSize();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }else if(z==bDeleteSize){
+            try {
+                deleteSize();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+        //SAUCE
+        else if(z==bNewSauce){
+            try {
+                newSauce();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }else if(z==bEditSauce){
+            try {
+                editSauce();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }else if(z==bDeleteSauce){
+            try {
+                deleteSauce();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+        //CATEGORY
+        else if(z==bNewCategory){
+            try {
+                newCategory();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }else if(z==bEditCategory){
+            try {
+                editCategory();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }else if(z==bDeleteCategory){
+            try {
+                deleteCategory();
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }

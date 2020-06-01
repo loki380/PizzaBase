@@ -8,14 +8,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class detailsOrder extends JFrame {
+public class DetailsOrder extends JFrame {
     private Container cp; //Main Panel
     private Integer id;
     private Connection cn;
     private Integer i=0;
     private ArrayList<String> listLabel = new ArrayList();
 
-    public detailsOrder(Connection cn, Integer id) throws SQLException {
+    public DetailsOrder(Connection cn, Integer id) throws SQLException {
 
         setSize(550,500);
         setTitle("Details Pizza");

@@ -1,5 +1,7 @@
 package viewandcontroller;
 
+import models.Driver;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -10,16 +12,16 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class newDriver extends JFrame implements ActionListener, KeyListener {
+public class NewDriver extends JFrame implements ActionListener, KeyListener {
     private Container cp; //Main Panel
     private Connection cn;
     private JButton bAdd;
     private JTextField tfName;
     private JTextField tfSurname;
     private JTextField tfPesel;
-    private boolean correct = false;
+    private Driver driver = new Driver();
 
-    public newDriver(Connection cn) {
+    public NewDriver(Connection cn) {
 
         setSize(300,300);
         setTitle("New Driver");
@@ -40,10 +42,6 @@ public class newDriver extends JFrame implements ActionListener, KeyListener {
         lsurname.setBounds(20,70,100,30);
         lpesel.setBounds(20,120,100,30);
 
-        bAdd = new JButton("Add");
-        bAdd.setBounds(100,200,100,30);
-        bAdd.addActionListener(this);
-
         tfName = new JTextField();
         tfName.setBounds(120,20,150,30);
         tfName.addKeyListener(this);
@@ -53,6 +51,10 @@ public class newDriver extends JFrame implements ActionListener, KeyListener {
         tfPesel = new JTextField();
         tfPesel.setBounds(120,120,150,30);
         tfPesel.addKeyListener(this);
+
+        bAdd = new JButton("Add");
+        bAdd.setBounds(100,200,100,30);
+        bAdd.addActionListener(this);
 
         cp.add(lname);
         cp.add(lsurname);
@@ -64,40 +66,19 @@ public class newDriver extends JFrame implements ActionListener, KeyListener {
     }
     private void addDriver() throws SQLException {
         Statement st = cn.createStatement();
-        String name = tfName.getText();
-        String surname = tfSurname.getText();
-        String pesel = tfPesel.getText();
+        driver = new Driver(tfName.getText(),tfSurname.getText(), tfPesel.getText());
         st.executeUpdate("INSERT INTO Driver(name,surname,pesel) VALUES" +
-                "('"+tfName.getText()+
-                "', '"+tfSurname.getText()+
-                "', '"+tfPesel.getText()+"')");
+                "('"+driver.getName()+
+                "', '"+driver.getSurname()+
+                "', '"+driver.getPesel()+"')");
         dispose();
     }
-    private boolean checkName(){
-        String name = tfName.getText();
-        if(name.matches("[A-Za-z]*") && name.length()>0){
-            return true;
-        }else return false;
-    }
-    private boolean checkSurName(){
-        String name = tfSurname.getText();
-        if(name.matches("[A-Za-z]*") && name.length()>0){
-            return true;
-        }else return false;
-    }
-    private boolean checkPesel(){
-        String pesel = tfPesel.getText();
-        if(pesel.matches("[0-9]{11}") && pesel.length()>0){
-            return true;
-        }else return false;
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
         Object z = e.getSource();
         if(z==bAdd){
             try {
-                correct = checkName() && checkPesel() && checkSurName();
+                boolean correct = driver.checkName() && driver.checkPesel() && driver.checkSurName();
                 if(correct) addDriver();
                 else JOptionPane.showMessageDialog(null,"Oops, you enter wrong values", "Error", JOptionPane.ERROR_MESSAGE);
             } catch (SQLException ex) {
@@ -120,13 +101,16 @@ public class newDriver extends JFrame implements ActionListener, KeyListener {
     public void keyReleased(KeyEvent keyEvent) {
         Object z = keyEvent.getSource();
         if(z==tfName){
-            if(checkName()) tfName.setBackground(Color.GREEN);
+            driver.setName(tfName.getText());
+            if(driver.checkName()) tfName.setBackground(Color.GREEN);
             else tfName.setBackground(Color.RED);
         }else if(z==tfSurname){
-            if(checkSurName()) tfSurname.setBackground(Color.GREEN);
+            driver.setSurname(tfSurname.getText());
+            if(driver.checkSurName()) tfSurname.setBackground(Color.GREEN);
             else tfSurname.setBackground(Color.RED);
         }else if(z==tfPesel){
-            if(checkPesel()) tfPesel.setBackground(Color.GREEN);
+            driver.setPesel(tfPesel.getText());
+            if(driver.checkPesel()) tfPesel.setBackground(Color.GREEN);
             else tfPesel.setBackground(Color.RED);
         }
     }
