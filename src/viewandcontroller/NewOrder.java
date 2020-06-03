@@ -124,6 +124,7 @@ public class NewOrder extends JFrame implements ActionListener, KeyListener {
         cbDriver.setBounds(150,270,200,30);
         tfPriced = new JTextField();
         tfPriced.setBounds(150,320,200,30);
+        tfPriced.addKeyListener(this);
 
         if(rs2.next()) {
             do{

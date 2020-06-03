@@ -32,7 +32,7 @@ public class Pizza {
         }else return false;
     }
     public boolean checkDes(){
-        if(description.matches("[a-zA-Z0-9ęółśążźćńĘÓŁŚĄŻŹĆŃ]*") && description.length()>0){
+        if(description.matches("[a-zA-Z0-9ęółśążźćńĘÓŁŚĄŻŹĆŃ ]*") && description.length()>0){
             return true;
         }else return false;
     }

@@ -15,30 +15,34 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class NewUser extends JFrame implements ActionListener {
+public class EditUser extends JFrame implements ActionListener {
     private Container cp; //Main Panel
     private Connection cn;
     private JTextField tfLogin;
     private JPasswordField tfPassoword;
     private JPasswordField tfPassoword1;
     private JButton bAdd;
+    private Integer id;
     private ArrayList<String> logins = new ArrayList();
 
-    public NewUser(Connection cn) throws SQLException {
+    public EditUser(Connection cn, Integer id) throws SQLException {
 
         setSize(350,250);
-        setTitle("New User");
+        setTitle("Edit User");
         setLocationRelativeTo(null);
         setResizable(false);
 
         cp = this.getContentPane();
         cp.setLayout(null);
         this.cn=cn;
+        this.id=id;
         buildPanel();
     }
     private void buildPanel() throws SQLException {
+        Statement st = cn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs = st.executeQuery("SELECT Login FROM Users WHERE idUser="+id);
         JLabel lLogin = new JLabel("Login:");
-        JLabel lPassword = new JLabel("Password:");
+        JLabel lPassword = new JLabel("New Password:");
         JLabel lPassword1 = new JLabel("Confirm Password:");
         lLogin.setBounds(20,20,100,30);
         lPassword.setBounds(20,70,100,30);
@@ -50,8 +54,11 @@ public class NewUser extends JFrame implements ActionListener {
         tfPassoword.setBounds(170,70,150,30);
         tfPassoword1 = new JPasswordField();
         tfPassoword1.setBounds(170,120,150,30);
+        if(rs.next()){
+            tfLogin.setText(rs.getString(1));
+        }
 
-        bAdd = new JButton("Add");
+        bAdd = new JButton("Edit");
         bAdd.setBounds(100,170,100,30);
         bAdd.addActionListener(this);
 
@@ -71,9 +78,9 @@ public class NewUser extends JFrame implements ActionListener {
         user.setPassword(tfPassoword.getText());
         String hash = User.generateHash(user.getPassword());
 
-        st.executeUpdate("INSERT INTO Users(Login, Password) VALUES" +
-                "('"+user.getLogin()+
-                "', '"+hash+"')");
+        st.executeUpdate("UPDATE Users SET " +
+                "Login='"+user.getLogin()+
+                "', password='"+hash+"' WHERE idUser="+id);
         dispose();
     }
     private boolean checkPasswords(){
@@ -85,7 +92,7 @@ public class NewUser extends JFrame implements ActionListener {
     }
     private boolean checkLogin() throws SQLException {
         Statement st = cn.createStatement();
-        ResultSet rs = st.executeQuery("SELECT Login FROM Users");
+        ResultSet rs = st.executeQuery("SELECT Login FROM Users WHERE idUser !="+id);
         if(rs.next()){
             do {
                 logins.add(rs.getString(1));

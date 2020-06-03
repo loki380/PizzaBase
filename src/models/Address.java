@@ -27,7 +27,7 @@ public class Address {
     public void setNrHouse(String nrHouse){this.nrHouse=nrHouse;}
     public void setNrFlat(String nrFlat){this.nrFlat=nrFlat;}
     public boolean checkLocality(){
-        if(locality.matches("[a-zA-ZęółśążźćńĘÓŁŚĄŻŹĆŃ]*") && locality.length()>0){
+        if(locality.matches("[a-zA-ZęółśążźćńĘÓŁŚĄŻŹĆŃ ]*") && locality.length()>0){
             return true;
         }else return false;
     }

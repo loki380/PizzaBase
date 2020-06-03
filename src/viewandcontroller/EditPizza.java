@@ -129,7 +129,6 @@ public class EditPizza extends JFrame implements ActionListener, KeyListener {
             idCategory.add(rs2.getInt(4));
             cbSize.addItem(rs2.getString(5));
             idSize.add(rs2.getInt(6));
-            tfPrice.setText(rs2.getString(7));
         }
         tfName.setText(pizza.getName());
         tfDescription.setText(pizza.getDescription());
