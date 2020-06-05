@@ -10,8 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.ArrayList;
@@ -30,6 +29,9 @@ public class Window extends JFrame implements ActionListener {
     private JTable table;
     private JScrollPane scrollPane;
     private JButton bLogin;
+    private String basename;
+    private String user;
+    private String pw;
 
     private JButton bOrder;
     private JButton bMenu;
@@ -109,7 +111,7 @@ public class Window extends JFrame implements ActionListener {
 
     private ArrayList idList = new ArrayList();
 
-    public Window() throws NoSuchAlgorithmException, SQLException, ClassNotFoundException {
+    public Window() throws NoSuchAlgorithmException, SQLException, ClassNotFoundException, IOException {
 
         setSize(925,600);
         setTitle("Application - Pizzeria Base");
@@ -1592,9 +1594,26 @@ public class Window extends JFrame implements ActionListener {
         pLeft.add(tfSearchCategory);
     }
     // ------------- CONNECT WITH SQL
-    private void connect() throws SQLException, ClassNotFoundException {
-        cn = DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName=master;", "sa", "kamil99");
+    private void connect() throws SQLException, ClassNotFoundException, IOException {
+        downloaddata();
+        cn = DriverManager.getConnection("jdbc:sqlserver://localhost:1433;databaseName="+basename+";", user, pw);
         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+    }
+    private void downloaddata() throws IOException {
+        String filePath = "src/connectdata";
+        BufferedReader fileReader = null;
+        try {
+            fileReader = new BufferedReader(new FileReader(filePath));
+            basename = fileReader.readLine();
+            user = fileReader.readLine();
+            pw = fileReader.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fileReader != null) {
+                fileReader.close();
+            }
+        }
     }
     // ------------- CHECK LOGIN AND PASSWORD
     private boolean checklogindata() throws SQLException, NoSuchAlgorithmException {
