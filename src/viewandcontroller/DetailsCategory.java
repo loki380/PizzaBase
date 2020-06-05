@@ -17,7 +17,7 @@ public class DetailsCategory extends JFrame{
     public DetailsCategory(Connection cn, Integer id) throws SQLException {
 
         setSize(300,250);
-        setTitle("Details Sauce");
+        setTitle("Details Category");
         setLocationRelativeTo(null);
         setResizable(false);
 

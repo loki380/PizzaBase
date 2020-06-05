@@ -18,7 +18,7 @@ public class DetailsOrder extends JFrame {
     public DetailsOrder(Connection cn, Integer id) throws SQLException {
 
         setSize(550,500);
-        setTitle("Details Pizza");
+        setTitle("Details Order");
         setLocationRelativeTo(null);
         setResizable(false);
 

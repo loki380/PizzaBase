@@ -388,8 +388,14 @@ public class NewOrder extends JFrame implements ActionListener, KeyListener {
         }else if(z==tfnr){
             String[] number = tfnr.getText().split("/");
             adres.setNrHouse(number[0]);
-            if(adres.checkNrHouse()) tfnr.setBackground(Color.GREEN);
-            else tfnr.setBackground(Color.RED);
+            try{
+                adres.setNrFlat(number[1]);
+                if(adres.checkNrFlat() && adres.checkNrHouse()) tfnr.setBackground(Color.GREEN);
+                else tfnr.setBackground(Color.RED);
+            }catch (ArrayIndexOutOfBoundsException ex){
+                if(adres.checkNrHouse()) tfnr.setBackground(Color.GREEN);
+                else tfnr.setBackground(Color.RED);
+            }
         }else if(z==tfPriced){
             order.setPrice(tfPriced.getText());
             if(order.checkPrice()) tfPriced.setBackground(Color.GREEN);

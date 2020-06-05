@@ -3,6 +3,10 @@ package viewandcontroller;
 import models.Address;
 import models.Customer;
 import models.Order;
+import models.DateLabelFormatter;
+import net.sourceforge.jdatepicker.impl.JDatePanelImpl;
+import net.sourceforge.jdatepicker.impl.JDatePickerImpl;
+import net.sourceforge.jdatepicker.impl.UtilDateModel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -14,6 +18,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,6 +50,7 @@ public class EditOrder extends JFrame implements ActionListener, KeyListener {
     private ArrayList<JTextField> listAmount = new ArrayList();
     private Integer i = 0;
     private Integer id;
+    private JDatePickerImpl datePicker;
     Customer customer = new Customer();
     Address adres = new Address();
     Order order = new Order();
@@ -98,13 +104,14 @@ public class EditOrder extends JFrame implements ActionListener, KeyListener {
                 "FROM Sauce ");
         ResultSet rs3 = st3.executeQuery("SELECT idDriver, name " +
                 "FROM Driver");
-        ResultSet rs4 = st4.executeQuery("SELECT price_delivery " +
+        ResultSet rs4 = st4.executeQuery("SELECT price_delivery, year(dateProduction), month(dateProduction), day(dateProduction) " +
                 "FROM Orderr WHERE idOrder="+id);
         JLabel lOrder = new JLabel("Order");
         JLabel lPizza = new JLabel("Pizza:");
         JLabel lSauce = new JLabel("Sauce:");
         JLabel lDriver = new JLabel("Driver:");
         JLabel lpriced = new JLabel("Price Delivery:");
+        JLabel ldata = new JLabel("Production Date: ");
         lOrder.setBounds(175,20,100,30);
         lOrder.setForeground(Color.BLACK);
         lPizza.setBounds(20,70,100,30);
@@ -115,6 +122,8 @@ public class EditOrder extends JFrame implements ActionListener, KeyListener {
         lDriver.setForeground(Color.BLACK);
         lpriced.setBounds(20,320,100,30);
         lpriced.setForeground(Color.BLACK);
+        ldata.setBounds(20,370,100,30);
+        ldata.setForeground(Color.BLACK);
 
         pPizza = new JPanel();
         pPizza.setBackground(Color.GRAY);
@@ -155,17 +164,25 @@ public class EditOrder extends JFrame implements ActionListener, KeyListener {
                 cbDriver.addItem(rs3.getString(2));
             }while (rs3.next());
         }
+        UtilDateModel model = new UtilDateModel();
         if(rs4.next()) {
             tfPriced.setText(rs4.getString(1));
+            System.out.println(rs4.getInt(3));
+            model.setDate(rs4.getInt(2), rs4.getInt(3)-1, rs4.getInt(4));
         }
         setPizza();
-
+        model.setSelected(true);
+        JDatePanelImpl datePanel = new JDatePanelImpl(model);
+        datePicker = new JDatePickerImpl(datePanel, new DateLabelFormatter());
+        datePicker.setBounds(150,370,200,30);
 
         pOrder.add(lOrder);
+        pOrder.add(datePicker);
         pOrder.add(lPizza);
         pOrder.add(lSauce);
         pOrder.add(lDriver);
         pOrder.add(lpriced);
+        pOrder.add(ldata);
         pOrder.add(cbSauce);
         pOrder.add(cbDriver);
         pOrder.add(tfPriced);
@@ -264,14 +281,15 @@ public class EditOrder extends JFrame implements ActionListener, KeyListener {
         Statement st = cn.createStatement();
         order.setIdDriver(idDriver.get((cbDriver.getSelectedIndex())));
         order.setIdSauce(idSauce.get((cbSauce.getSelectedIndex())));
-        Date nowDate = new Date();
+        Date selectedDate = (Date) datePicker.getModel().getValue();
         SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
-        order.setData(sdf1.format(nowDate));
+        order.setData(sdf1.format(selectedDate));
         order.setPrice(tfPriced.getText());
         st.executeUpdate("UPDATE Orderr SET " +
                 "Driver_idDriver="+order.getIdDriver()+
                 ",Sauce_idSauce="+order.getIdSauce()+
-                ",price_delivery="+order.getPrice());
+                ",dateProduction='"+order.getData()+
+                "',price_delivery="+order.getPrice()+" WHERE idOrder="+id);
         st.executeUpdate("DELETE FROM Order_has_Pizza WHERE Orderr_idOrder="+id);
         int j=0;
         for(JComboBox x: listPizza){
@@ -400,10 +418,16 @@ public class EditOrder extends JFrame implements ActionListener, KeyListener {
         Object z = e.getSource();
         if(z==bEdit){
             try {
+            boolean correct = customer.checkName() && customer.checkSurname() && customer.checkTel() && order.checkPrice() && adres.checkLocality() && adres.checkPostcode() && adres.checkStreet() && adres.checkNrHouse() && adres.checkNrFlat() && order.checkData();
+            if(correct){
                 updateCustomer();
                 updateOrder();
+            }
+            else JOptionPane.showMessageDialog(null,"Oops, you enter wrong values", "Error", JOptionPane.ERROR_MESSAGE);
             } catch (SQLException ex) {
                 ex.printStackTrace();
+            } catch (NullPointerException | ParseException ex){
+                JOptionPane.showMessageDialog(null,"Oops, you enter wrong values", "Error", JOptionPane.ERROR_MESSAGE);
             }
         }else if(z==bNext){
             try {
@@ -453,8 +477,14 @@ public class EditOrder extends JFrame implements ActionListener, KeyListener {
         }else if(z==tfnr){
             String[] number = tfnr.getText().split("/");
             adres.setNrHouse(number[0]);
-            if(adres.checkNrHouse()) tfnr.setBackground(Color.GREEN);
-            else tfnr.setBackground(Color.RED);
+            try{
+                adres.setNrFlat(number[1]);
+                if(adres.checkNrFlat() && adres.checkNrHouse()) tfnr.setBackground(Color.GREEN);
+                else tfnr.setBackground(Color.RED);
+            }catch (ArrayIndexOutOfBoundsException ex){
+                if(adres.checkNrHouse()) tfnr.setBackground(Color.GREEN);
+                else tfnr.setBackground(Color.RED);
+            }
         }else if(z==tfPriced){
             order.setPrice(tfPriced.getText());
             if(order.checkPrice()) tfPriced.setBackground(Color.GREEN);

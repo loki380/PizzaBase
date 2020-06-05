@@ -24,7 +24,7 @@ public class EditCategory extends JFrame implements ActionListener, KeyListener 
     public EditCategory(Connection cn, Integer id) throws SQLException {
 
         setSize(300,200);
-        setTitle("New Size");
+        setTitle("Edit Category");
         setLocationRelativeTo(null);
         setResizable(false);
 

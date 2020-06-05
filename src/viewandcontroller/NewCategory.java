@@ -24,7 +24,7 @@ public class NewCategory extends JFrame implements ActionListener, KeyListener {
     public NewCategory(Connection cn) throws SQLException {
 
         setSize(300,200);
-        setTitle("New Size");
+        setTitle("New Category");
         setLocationRelativeTo(null);
         setResizable(false);
 

@@ -37,7 +37,19 @@ public class Driver {
     }
     public boolean checkPesel(){
         if(pesel.matches("[0-9]{11}") && pesel.length()>0){
-            return true;
+            int suma=0;
+            suma = Character.getNumericValue(pesel.charAt(0))*9+
+                    Character.getNumericValue(pesel.charAt(1))*7+
+                    Character.getNumericValue(pesel.charAt(2))*3+
+                    Character.getNumericValue(pesel.charAt(3))*1+
+                    Character.getNumericValue(pesel.charAt(4))*9+
+                    Character.getNumericValue(pesel.charAt(5))*7+
+                    Character.getNumericValue(pesel.charAt(6))*3+
+                    Character.getNumericValue(pesel.charAt(7))*1+
+                    Character.getNumericValue(pesel.charAt(8))*9+
+                    Character.getNumericValue(pesel.charAt(9))*7;
+            if(suma%10==Character.getNumericValue(pesel.charAt(10))) return true;
+            else return false;
         }else return false;
     }
 }

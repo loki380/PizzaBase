@@ -45,6 +45,7 @@ public class Window extends JFrame implements ActionListener {
     private JButton bSize;
     private JButton bSauce;
     private JButton bCategory;
+    private JButton bStatistics;
 
     private JButton bNewOrder;
     private JButton bEditOrder;
@@ -52,6 +53,8 @@ public class Window extends JFrame implements ActionListener {
     private JButton bDeleteOrder;
     private JButton bSearchOrder;
     private JTextField tfSearchOrder;
+    private JComboBox cbSearchOrder;
+    private ArrayList<String> listSearchOrder;
 
     private JButton bNewUser;
     private JButton bEditUser;
@@ -59,6 +62,8 @@ public class Window extends JFrame implements ActionListener {
     private JButton bDetailsUser;
     private JButton bSearchUser;
     private JTextField tfSearchUser;
+    private JComboBox cbSearchUser;
+    private ArrayList<String> listSearchUser;
 
     private JButton bNewPizza;
     private JButton bEditPizza;
@@ -66,6 +71,8 @@ public class Window extends JFrame implements ActionListener {
     private JButton bDeletePizza;
     private JButton bSearchPizza;
     private JTextField tfSearchPizza;
+    private JComboBox cbSearchPizza;
+    private ArrayList<String> listSearchPizza;
 
     private JButton bNewDriver;
     private JButton bEditDriver;
@@ -73,6 +80,8 @@ public class Window extends JFrame implements ActionListener {
     private JButton bDetailsDriver;
     private JButton bSearchDriver;
     private JTextField tfSearchDriver;
+    private JComboBox cbSearchDriver;
+    private ArrayList<String> listSearchDriver;
 
     private JButton bNewIngredient;
     private JButton bEditIngredient;
@@ -80,6 +89,8 @@ public class Window extends JFrame implements ActionListener {
     private JButton bDetailsIngredient;
     private JButton bSearchIngredient;
     private JTextField tfSearchIngredient;
+    private JComboBox cbSearchIngredient;
+    private ArrayList<String> listSearchIngredient;
 
     private JButton bNewSupplier;
     private JButton bEditSupplier;
@@ -87,6 +98,8 @@ public class Window extends JFrame implements ActionListener {
     private JButton bDetailsSupplier;
     private JButton bSearchSupplier;
     private JTextField tfSearchSupplier;
+    private JComboBox cbSearchSupplier;
+    private ArrayList<String> listSearchSupplier;
 
     private JButton bNewSize;
     private JButton bEditSize;
@@ -94,6 +107,8 @@ public class Window extends JFrame implements ActionListener {
     private JButton bDetailsSize;
     private JButton bSearchSize;
     private JTextField tfSearchSize;
+    private JComboBox cbSearchSize;
+    private ArrayList<String> listSearchSize;
 
     private JButton bNewSauce;
     private JButton bEditSauce;
@@ -101,6 +116,8 @@ public class Window extends JFrame implements ActionListener {
     private JButton bDetailsSauce;
     private JButton bSearchSauce;
     private JTextField tfSearchSauce;
+    private JComboBox cbSearchSauce;
+    private ArrayList<String> listSearchSauce;
 
     private JButton bNewCategory;
     private JButton bEditCategory;
@@ -108,6 +125,8 @@ public class Window extends JFrame implements ActionListener {
     private JButton bDetailsCategory;
     private JButton bSearchCategory;
     private JTextField tfSearchCategory;
+    private JComboBox cbSearchCategory;
+    private ArrayList<String> listSearchCategory;
 
     private ArrayList idList = new ArrayList();
 
@@ -247,6 +266,11 @@ public class Window extends JFrame implements ActionListener {
         bUsers.setBackground(new Color(0xBDBAA5));
         bUsers.addActionListener(this);
 
+        bStatistics = new JButton("Statistics");
+        bStatistics.setBounds(30,310,240,40);
+        bStatistics.setBackground(new Color(0xBDBAA5));
+        bStatistics.addActionListener(this);
+
         bBack = new JButton("Back");
         bBack.setBounds(30,380,180,40);
         bBack.setBackground(new Color(0xBDBAA5));
@@ -261,9 +285,142 @@ public class Window extends JFrame implements ActionListener {
         pRight.add(bSauce);
         pRight.add(bSize);
         pRight.add(bUsers);
+        pRight.add(bStatistics);
         pRight.add(bBack);
         pRight.add(bExit);
         bg.add(pRight);
+    }
+    // ------------- Statistiscs
+    private void setStatistics() throws SQLException {
+        setBG();
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
+        panel.setBounds(100,50,700,400);
+        panel.setBackground(new Color(0xBDBAA5));
+
+        Statement st = cn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs = st.executeQuery("SELECT TOP 1 name, price FROM Pizza ORDER BY price DESC");
+
+        Statement st1 = cn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs1 = st1.executeQuery("SELECT TOP 1 name, price FROM Pizza ORDER BY price");
+
+        Statement st4 = cn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs4 = st4.executeQuery("SELECT CAST(ROUND(AVG(price),2) as numeric(4,2)) FROM Pizza");
+
+        JLabel expensive = new JLabel();
+        if(rs.next()){
+            expensive.setText("Most expensive pizza: "+rs.getString(1)+" - "+rs.getString(2)+" PLN");
+        }
+        expensive.setBounds(50,50, 300,30);
+
+        JLabel cheap = new JLabel();
+        if(rs1.next()){
+            cheap.setText("The cheapest pizza: "+rs1.getString(1)+" - "+rs1.getString(2)+" PLN");
+        }
+        cheap.setBounds(50,100, 300,30);
+
+        JLabel avgpizza = new JLabel();
+        if(rs4.next()){
+            avgpizza.setText("Average price of pizza: "+rs4.getString(1)+" PLN");
+        }
+        avgpizza.setBounds(50,150, 300,30);
+
+        panel.add(expensive);
+        panel.add(cheap);
+        panel.add(avgpizza);
+
+        Statement st2 = cn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs2 = st2.executeQuery("SELECT TOP 1 name, price FROM Sauce ORDER BY price DESC");
+
+        Statement st3 = cn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs3 = st3.executeQuery("SELECT TOP 1 name, price FROM Sauce ORDER BY price");
+
+        Statement st5 = cn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs5 = st5.executeQuery("SELECT CAST(ROUND(AVG(price),2) as numeric(4,2)) FROM Sauce");
+
+        JLabel expensives = new JLabel();
+        if(rs2.next()){
+            expensives.setText("Most expensive sauce: "+rs2.getString(1)+" - "+rs2.getString(2)+" PLN");
+        }
+        expensives.setBounds(50,200, 300,30);
+
+        JLabel cheaps = new JLabel();
+        if(rs3.next()){
+            cheaps.setText("The cheapest sauce: "+rs3.getString(1)+" - "+rs3.getString(2)+" PLN");
+        }
+        cheaps.setBounds(50,250, 300,30);
+
+        JLabel avgsauce = new JLabel();
+        if(rs5.next()){
+            avgsauce.setText("Average price of sauce: "+rs5.getString(1)+" PLN");
+        }
+        avgsauce.setBounds(50,300, 300,30);
+
+        panel.add(expensives);
+        panel.add(cheaps);
+        panel.add(avgsauce);
+
+        Statement st6 = cn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs6 = st6.executeQuery("SELECT name FROM Supplier WHERE idSupplier=(SELECT MAX(Supplier_idSupplier) FROM Ingredient)");
+
+        JLabel supp = new JLabel();
+        if(rs6.next()){
+            supp.setText("The prime Supplier: "+rs6.getString(1));
+        }
+        supp.setBounds(350,50, 300,30);
+
+        panel.add(supp);
+
+        Statement st7 = cn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs7 = st7.executeQuery("SELECT name FROM Ingredient WHERE idIngredient=(SELECT MAX(Ingredient_idIngredient) FROM Pizza_has_Ingredient)");
+
+        JLabel ing = new JLabel();
+        if(rs7.next()){
+            ing.setText("The most popular Ingredient: "+rs7.getString(1));
+        }
+        ing.setBounds(350,100, 300,30);
+
+        panel.add(ing);
+
+        Statement st8 = cn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs8 = st8.executeQuery("SELECT TOP 1 name, price FROM Ingredient ORDER BY price DESC");
+
+        Statement st9 = cn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs9 = st9.executeQuery("SELECT TOP 1 name, price FROM Ingredient ORDER BY price");
+
+        Statement st10 = cn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+        ResultSet rs10 = st10.executeQuery("SELECT CAST(ROUND(AVG(price),2) as numeric(4,2)) FROM Ingredient");
+
+        JLabel expensives1 = new JLabel();
+        if(rs8.next()){
+            expensives1.setText("Most expensive Ingredient: "+rs8.getString(1)+" - "+rs8.getString(2)+" PLN");
+        }
+        expensives1.setBounds(350,150, 300,30);
+
+        JLabel cheaps1 = new JLabel();
+        if(rs9.next()){
+            cheaps1.setText("The cheapest Ingredient: "+rs9.getString(1)+" - "+rs9.getString(2)+" PLN");
+        }
+        cheaps1.setBounds(350,200, 300,30);
+
+        JLabel avging = new JLabel();
+        if(rs10.next()){
+            avging.setText("Average price of Ingredient: "+rs10.getString(1)+" PLN");
+        }
+        avging.setBounds(350,250, 300,30);
+
+        panel.add(expensives1);
+        panel.add(cheaps1);
+        panel.add(avging);
+
+        bBack = new JButton("Back");
+        bBack.setBounds(375,475,180,40);
+        bBack.setBackground(new Color(0xBDBAA5));
+        bBack.addActionListener(this);
+
+        bg.add(panel);
+        bg.add(bBack);
+
     }
     // ------------- ORDER PANEL
     private void setRightOrder(){
@@ -295,15 +452,27 @@ public class Window extends JFrame implements ActionListener {
         bBack.addActionListener(this);
 
         bSearchOrder = new JButton("Search");
-        bSearchOrder.setBounds(30,30,200,30);
+        bSearchOrder.setBounds(30,30,140,30);
         bSearchOrder.setBackground(new Color(0xBDBAA5));
         bSearchOrder.addActionListener(this);
 
         tfSearchOrder = new JTextField();
-        tfSearchOrder.setBounds(240,30,190,30);
+        tfSearchOrder.setBounds(180,30,140,30);
+
+        cbSearchOrder = new JComboBox();
+        cbSearchOrder.setBounds(340,30,100,30);
+        cbSearchOrder.addItem("Nr");
+        cbSearchOrder.addItem("Customer Name");
+        cbSearchOrder.addItem("Date");
+
+        listSearchOrder= new ArrayList<>();
+        listSearchOrder.add("idOrder");
+        listSearchOrder.add("Customer.name");
+        listSearchOrder.add("dateProduction");
 
         pLeft.add(bSearchOrder);
         pLeft.add(tfSearchOrder);
+        pLeft.add(cbSearchOrder);
 
         pRight.add(bNewOrder);
         pRight.add(bEditOrder);
@@ -311,6 +480,7 @@ public class Window extends JFrame implements ActionListener {
         pRight.add(bDeleteOrder);
         pRight.add(bBack);
         bg.add(pRight);
+        validate();
     }
     // ------------- DRIVER PANEL
     private void setRightDriver(){
@@ -342,15 +512,27 @@ public class Window extends JFrame implements ActionListener {
         bBack.addActionListener(this);
 
         bSearchDriver = new JButton("Search");
-        bSearchDriver.setBounds(30,30,200,30);
+        bSearchDriver.setBounds(30,30,140,30);
         bSearchDriver.setBackground(new Color(0xBDBAA5));
         bSearchDriver.addActionListener(this);
 
         tfSearchDriver = new JTextField();
-        tfSearchDriver.setBounds(240,30,190,30);
+        tfSearchDriver.setBounds(180,30,140,30);
+
+        cbSearchDriver = new JComboBox();
+        cbSearchDriver.setBounds(340,30,100,30);
+        cbSearchDriver.addItem("Name");
+        cbSearchDriver.addItem("Surname");
+        cbSearchDriver.addItem("Pesel");
+
+        listSearchDriver= new ArrayList<>();
+        listSearchDriver.add("name");
+        listSearchDriver.add("surname");
+        listSearchDriver.add("pesel");
 
         pLeft.add(bSearchDriver);
         pLeft.add(tfSearchDriver);
+        pLeft.add(cbSearchDriver);
 
         pRight.add(bNewDriver);
         pRight.add(bEditDriver);
@@ -358,6 +540,7 @@ public class Window extends JFrame implements ActionListener {
         pRight.add(bDeleteDriver);
         pRight.add(bBack);
         bg.add(pRight);
+        validate();
     }
     // ------------- MENU PANEL
     private void setRightMenu(){
@@ -389,15 +572,29 @@ public class Window extends JFrame implements ActionListener {
         bBack.addActionListener(this);
 
         bSearchPizza = new JButton("Search");
-        bSearchPizza.setBounds(30,30,200,30);
+        bSearchPizza.setBounds(30,30,140,30);
         bSearchPizza.setBackground(new Color(0xBDBAA5));
         bSearchPizza.addActionListener(this);
 
         tfSearchPizza = new JTextField();
-        tfSearchPizza.setBounds(240,30,190,30);
+        tfSearchPizza.setBounds(180,30,140,30);
+
+        cbSearchPizza = new JComboBox();
+        cbSearchPizza.setBounds(340,30,100,30);
+        cbSearchPizza.addItem("Name");
+        cbSearchPizza.addItem("Description");
+        cbSearchPizza.addItem("Category");
+        cbSearchPizza.addItem("Price");
+
+        listSearchPizza= new ArrayList<>();
+        listSearchPizza.add("Pizza.name");
+        listSearchPizza.add("description");
+        listSearchPizza.add("Category.name");
+        listSearchPizza.add("price");
 
         pLeft.add(bSearchPizza);
         pLeft.add(tfSearchPizza);
+        pLeft.add(cbSearchPizza);
 
         pRight.add(bNewPizza);
         pRight.add(bDetailsPizza);
@@ -405,6 +602,7 @@ public class Window extends JFrame implements ActionListener {
         pRight.add(bDeletePizza);
         pRight.add(bBack);
         bg.add(pRight);
+        validate();
     }
     // ------------- INGREDIENT PANEL
     private void setRightIng(){
@@ -436,15 +634,29 @@ public class Window extends JFrame implements ActionListener {
         bBack.addActionListener(this);
 
         bSearchIngredient = new JButton("Search");
-        bSearchIngredient.setBounds(30,30,200,30);
+        bSearchIngredient.setBounds(30,30,140,30);
         bSearchIngredient.setBackground(new Color(0xBDBAA5));
         bSearchIngredient.addActionListener(this);
 
         tfSearchIngredient = new JTextField();
-        tfSearchIngredient.setBounds(240,30,190,30);
+        tfSearchIngredient.setBounds(180,30,140,30);
+
+        cbSearchIngredient = new JComboBox();
+        cbSearchIngredient.setBounds(340,30,100,30);
+        cbSearchIngredient.addItem("Name");
+        cbSearchIngredient.addItem("Weight");
+        cbSearchIngredient.addItem("Price");
+        cbSearchIngredient.addItem("Supplier");
+
+        listSearchIngredient= new ArrayList<>();
+        listSearchIngredient.add("Ingredient.name");
+        listSearchIngredient.add("mass");
+        listSearchIngredient.add("price");
+        listSearchIngredient.add("Supplier.name");
 
         pLeft.add(bSearchIngredient);
         pLeft.add(tfSearchIngredient);
+        pLeft.add(cbSearchIngredient);
 
         pRight.add(bNewIngredient);
         pRight.add(bEditIngredient);
@@ -452,6 +664,7 @@ public class Window extends JFrame implements ActionListener {
         pRight.add(bDeleteIngredient);
         pRight.add(bBack);
         bg.add(pRight);
+        validate();
     }
     // ------------- SUPPLIER PANEL
     private void setRightSupp(){
@@ -483,15 +696,27 @@ public class Window extends JFrame implements ActionListener {
         bBack.addActionListener(this);
 
         bSearchSupplier = new JButton("Search");
-        bSearchSupplier.setBounds(30,30,200,30);
+        bSearchSupplier.setBounds(30,30,140,30);
         bSearchSupplier.setBackground(new Color(0xBDBAA5));
         bSearchSupplier.addActionListener(this);
 
         tfSearchSupplier = new JTextField();
-        tfSearchSupplier.setBounds(240,30,190,30);
+        tfSearchSupplier.setBounds(180,30,140,30);
+
+        cbSearchSupplier = new JComboBox();
+        cbSearchSupplier.setBounds(340,30,100,30);
+        cbSearchSupplier.addItem("Name");
+        cbSearchSupplier.addItem("Locality");
+        cbSearchSupplier.addItem("Street");
+
+        listSearchSupplier= new ArrayList<>();
+        listSearchSupplier.add("name");
+        listSearchSupplier.add("locality");
+        listSearchSupplier.add("street");
 
         pLeft.add(bSearchSupplier);
         pLeft.add(tfSearchSupplier);
+        pLeft.add(cbSearchSupplier);
 
         pRight.add(bNewSupplier);
         pRight.add(bEditSupplier);
@@ -499,6 +724,7 @@ public class Window extends JFrame implements ActionListener {
         pRight.add(bDeleteSupplier);
         pRight.add(bBack);
         bg.add(pRight);
+        validate();
     }
     // ------------- USERS PANEL
     private void setRightUsers(){
@@ -530,15 +756,23 @@ public class Window extends JFrame implements ActionListener {
         bBack.addActionListener(this);
 
         bSearchUser = new JButton("Search");
-        bSearchUser.setBounds(30,30,200,30);
+        bSearchUser.setBounds(30,30,140,30);
         bSearchUser.setBackground(new Color(0xBDBAA5));
         bSearchUser.addActionListener(this);
 
         tfSearchUser = new JTextField();
-        tfSearchUser.setBounds(240,30,190,30);
+        tfSearchUser.setBounds(180,30,140,30);
+
+        cbSearchUser = new JComboBox();
+        cbSearchUser.setBounds(340,30,100,30);
+        cbSearchUser.addItem("Login");
+
+        listSearchUser= new ArrayList<>();
+        listSearchUser.add("Login");
 
         pLeft.add(bSearchUser);
         pLeft.add(tfSearchUser);
+        pLeft.add(cbSearchUser);
 
         pRight.add(bNewUser);
         pRight.add(bEditUser);
@@ -546,6 +780,7 @@ public class Window extends JFrame implements ActionListener {
         pRight.add(bDeleteUser);
         pRight.add(bBack);
         bg.add(pRight);
+        validate();
     }
     // ------------- SIZE PANEL
     private void setRightSize(){
@@ -577,15 +812,25 @@ public class Window extends JFrame implements ActionListener {
         bBack.addActionListener(this);
 
         bSearchSize = new JButton("Search");
-        bSearchSize.setBounds(30,30,200,30);
+        bSearchSize.setBounds(30,30,140,30);
         bSearchSize.setBackground(new Color(0xBDBAA5));
         bSearchSize.addActionListener(this);
 
         tfSearchSize = new JTextField();
-        tfSearchSize.setBounds(240,30,190,30);
+        tfSearchSize.setBounds(180,30,140,30);
+
+        cbSearchSize = new JComboBox();
+        cbSearchSize.setBounds(340,30,100,30);
+        cbSearchSize.addItem("Name");
+        cbSearchSize.addItem("Diameter");
+
+        listSearchSize= new ArrayList<>();
+        listSearchSize.add("name");
+        listSearchSize.add("diameter");
 
         pLeft.add(bSearchSize);
         pLeft.add(tfSearchSize);
+        pLeft.add(cbSearchSize);
 
         pRight.add(bNewSize);
         pRight.add(bEditSize);
@@ -593,6 +838,7 @@ public class Window extends JFrame implements ActionListener {
         pRight.add(bDeleteSize);
         pRight.add(bBack);
         bg.add(pRight);
+        validate();
     }
     // ------------- SAUCE PANEL
     private void setRightSauce(){
@@ -624,15 +870,25 @@ public class Window extends JFrame implements ActionListener {
         bBack.addActionListener(this);
 
         bSearchSauce = new JButton("Search");
-        bSearchSauce.setBounds(30,30,200,30);
+        bSearchSauce.setBounds(30,30,140,30);
         bSearchSauce.setBackground(new Color(0xBDBAA5));
         bSearchSauce.addActionListener(this);
 
         tfSearchSauce = new JTextField();
-        tfSearchSauce.setBounds(240,30,190,30);
+        tfSearchSauce.setBounds(180,30,140,30);
+
+        cbSearchSauce = new JComboBox();
+        cbSearchSauce.setBounds(340,30,100,30);
+        cbSearchSauce.addItem("Name");
+        cbSearchSauce.addItem("Price");
+
+        listSearchSauce= new ArrayList<>();
+        listSearchSauce.add("name");
+        listSearchSauce.add("price");
 
         pLeft.add(bSearchSauce);
         pLeft.add(tfSearchSauce);
+        pLeft.add(cbSearchSauce);
 
         pRight.add(bNewSauce);
         pRight.add(bDetailsSauce);
@@ -640,6 +896,7 @@ public class Window extends JFrame implements ActionListener {
         pRight.add(bDeleteSauce);
         pRight.add(bBack);
         bg.add(pRight);
+        validate();
     }
     // ------------- CATEGORY PANEL
     private void setRightCategory(){
@@ -671,15 +928,23 @@ public class Window extends JFrame implements ActionListener {
         bBack.addActionListener(this);
 
         bSearchCategory = new JButton("Search");
-        bSearchCategory.setBounds(30,30,200,30);
+        bSearchCategory.setBounds(30,30,140,30);
         bSearchCategory.setBackground(new Color(0xBDBAA5));
         bSearchCategory.addActionListener(this);
 
         tfSearchCategory = new JTextField();
-        tfSearchCategory.setBounds(240,30,190,30);
+        tfSearchCategory.setBounds(180,30,140,30);
+
+        cbSearchCategory = new JComboBox();
+        cbSearchCategory.setBounds(340,30,100,30);
+        cbSearchCategory.addItem("Name");
+
+        listSearchCategory= new ArrayList<>();
+        listSearchCategory.add("name");
 
         pLeft.add(bSearchCategory);
         pLeft.add(tfSearchCategory);
+        pLeft.add(cbSearchCategory);
 
         pRight.add(bNewCategory);
         pRight.add(bDetailsCategory);
@@ -687,6 +952,7 @@ public class Window extends JFrame implements ActionListener {
         pRight.add(bDeleteCategory);
         pRight.add(bBack);
         bg.add(pRight);
+        validate();
     }
     // ------------- FUNCTION TO CREATE TABLE WITH DATA
     private void showTable(String query) throws SQLException {
@@ -713,7 +979,6 @@ public class Window extends JFrame implements ActionListener {
 
         table = new JTable(data, columnNames);
         scrollPane = new JScrollPane(table);
-
         pLeft = new JPanel();
         pLeft.setBackground(new Color(0.0f, 0.0f, 0.0f, 0.5f));
         pLeft.setBounds(50,50,500,450);
@@ -818,19 +1083,19 @@ public class Window extends JFrame implements ActionListener {
     }
     private void searchOrder() throws SQLException {
         String searchData = tfSearchOrder.getText();
-        pLeft.remove(scrollPane);
+        String text = listSearchOrder.get(cbSearchOrder.getSelectedIndex());
+        setBG();
         showTable("SELECT idOrder as 'Nr Order', Customer.name as 'Customer name', dateProduction as 'Date' " +
                 "FROM Orderr inner join Customer " +
                 "ON Customer_idCustomer=idCustomer " +
-                "WHERE idOrder LIKE '%"+searchData+"%' OR Customer.name LIKE '%"+searchData+"%' OR dateProduction LIKE '%"+searchData+"%'" +
+                "WHERE "+text+" LIKE '%"+searchData+"%' " +
                 "ORDER BY dateProduction DESC");
         storeId("SELECT idOrder " +
                 "FROM Orderr inner join Customer " +
                 "ON Customer_idCustomer=idCustomer " +
-                "WHERE idOrder LIKE '%"+searchData+"%' OR Customer.name LIKE '%"+searchData+"%' OR dateProduction LIKE '%"+searchData+"%'" +
+                "WHERE "+text+" LIKE '%"+searchData+"%' " +
                 "ORDER BY dateProduction DESC");
-        pLeft.add(bSearchOrder);
-        pLeft.add(tfSearchOrder);
+        setRightOrder();
     }
     // ------------- PIZZA CRUD
     private void newPizza() throws SQLException {
@@ -928,19 +1193,19 @@ public class Window extends JFrame implements ActionListener {
     }
     private void searchPizza() throws SQLException {
         String searchData = tfSearchPizza.getText();
-        pLeft.remove(scrollPane);
+        String text = listSearchPizza.get(cbSearchPizza.getSelectedIndex());
+        setBG();
         showTable("SELECT Pizza.name as 'Name', description as 'Description', Category.name as 'Category', price as 'Price'\n" +
                 "FROM Pizza inner join Category\n" +
                 "ON Category_idCategory=idCategory\n" +
-                "WHERE Pizza.name LIKE '%"+searchData+"%' OR description LIKE '%"+searchData+"%' OR Category.name LIKE '%"+searchData+"%' OR price LIKE '%"+searchData+"%' " +
+                "WHERE "+text+" LIKE '%"+searchData+"%' " +
                 "ORDER BY Pizza.name");
         storeId("SELECT idPizza " +
                 "FROM Pizza inner join Category\n" +
                 "ON Category_idCategory=idCategory\n" +
-                "WHERE Pizza.name LIKE '%"+searchData+"%' OR description LIKE '%"+searchData+"%' OR Category.name LIKE '%"+searchData+"%' OR price LIKE '%"+searchData+"%' " +
+                "WHERE "+text+" LIKE '%"+searchData+"%' " +
                 "ORDER BY Pizza.name");
-        pLeft.add(bSearchPizza);
-        pLeft.add(tfSearchPizza);
+        setRightMenu();
     }
     // ------------- SUPPLIER CRUD
     private void newSupplier(){
@@ -1022,17 +1287,17 @@ public class Window extends JFrame implements ActionListener {
     }
     private void searchSupplier() throws SQLException {
         String searchData = tfSearchSupplier.getText();
-        pLeft.remove(scrollPane);
+        String text = listSearchSupplier.get(cbSearchSupplier.getSelectedIndex());
+        setBG();
         showTable("SELECT name as 'Name', (CONCAT(locality,' ',postcode)) as 'Locality', (CONCAT(street,' ',nrHouse)) as 'Street' " +
                 "FROM Supplier inner join Address ON Address_idAddress=idAddress " +
-                "WHERE name LIKE '%"+searchData+"%' OR locality LIKE '%"+searchData+"%' OR postcode LIKE '%"+searchData+"%' OR street LIKE '%"+searchData+"%' OR nrHouse LIKE '%"+searchData+"%' " +
+                "WHERE "+text+" LIKE '%"+searchData+"%' " +
                 "ORDER BY name");
         storeId("SELECT idSupplier " +
                 "FROM Supplier inner join Address ON Address_idAddress=idAddress " +
-                "WHERE name LIKE '%"+searchData+"%' OR locality LIKE '%"+searchData+"%' OR postcode LIKE '%"+searchData+"%' OR street LIKE '%"+searchData+"%' OR nrHouse LIKE '%"+searchData+"%' " +
+                "WHERE "+text+" LIKE '%"+searchData+"%' " +
                 "ORDER BY name");
-        pLeft.add(bSearchSupplier);
-        pLeft.add(tfSearchSupplier);
+        setRightSupp();
     }
     // ------------- DRIVER CRUD
     private void newDriver(){
@@ -1114,11 +1379,11 @@ public class Window extends JFrame implements ActionListener {
     }
     private void searchDriver() throws SQLException {
         String searchData = tfSearchDriver.getText();
-        pLeft.remove(scrollPane);
-        showTable("SELECT name as 'Name',surname as 'Surname', pesel as 'Pesel' FROM Driver WHERE name LIKE '%"+searchData+"%' OR surname LIKE '%"+searchData+"%' OR pesel LIKE '%"+searchData+"%' ORDER BY name");
-        storeId("SELECT idDriver FROM Driver WHERE name LIKE '%"+searchData+"%' OR surname LIKE '%"+searchData+"%' OR pesel LIKE '%"+searchData+"%' ORDER BY name");
-        pLeft.add(bSearchDriver);
-        pLeft.add(tfSearchDriver);
+        String text = listSearchDriver.get(cbSearchDriver.getSelectedIndex());
+        setBG();
+        showTable("SELECT name as 'Name',surname as 'Surname', pesel as 'Pesel' FROM Driver WHERE "+text+" LIKE '%"+searchData+"%' ORDER BY name");
+        storeId("SELECT idDriver FROM Driver WHERE "+text+" LIKE '%"+searchData+"%' ORDER BY name");
+        setRightDriver();
     }
     // ------------- INGREDIENT CRUD
     private void newIngredient() throws SQLException {
@@ -1208,19 +1473,19 @@ public class Window extends JFrame implements ActionListener {
     }
     private void searchIngredient() throws SQLException {
         String searchData = tfSearchIngredient.getText();
-        pLeft.remove(scrollPane);
+        String text = listSearchIngredient.get(cbSearchIngredient.getSelectedIndex());
+        setBG();
         showTable("SELECT Ingredient.name as 'Name',mass as 'Weight', price as 'Price', Supplier.name as 'Supplier' " +
                 "FROM Ingredient inner join Supplier " +
                 "ON Supplier_idSupplier=idSupplier\n" +
-                "WHERE Ingredient.name LIKE '%"+searchData+"%' OR mass LIKE '%"+searchData+"%' OR price LIKE '%"+searchData+"%' OR Supplier.name LIKE '%"+searchData+"%' " +
+                "WHERE "+text+" LIKE '%"+searchData+"%' " +
                 "ORDER BY Ingredient.name");
         storeId("SELECT idIngredient "+
                 "FROM Ingredient inner join Supplier " +
                 "ON Supplier_idSupplier=idSupplier\n" +
-                "WHERE Ingredient.name LIKE '%"+searchData+"%' OR mass LIKE '%"+searchData+"%' OR price LIKE '%"+searchData+"%' OR Supplier.name LIKE '%"+searchData+"%' " +
+                "WHERE "+text+" LIKE '%"+searchData+"%' " +
                 "ORDER BY Ingredient.name");
-        pLeft.add(bSearchIngredient);
-        pLeft.add(tfSearchIngredient);
+        setRightIng();
     }
     // ------------- USERS CRUD
     private void newUser() throws SQLException {
@@ -1302,17 +1567,17 @@ public class Window extends JFrame implements ActionListener {
     }
     private void searchUser() throws SQLException {
         String searchData = tfSearchUser.getText();
-        pLeft.remove(scrollPane);
+        String text = listSearchUser.get(cbSearchUser.getSelectedIndex());
+        setBG();
         showTable("SELECT Login " +
                 "FROM Users " +
-                "WHERE Login LIKE '%"+searchData+"%' " +
+                "WHERE "+text+" LIKE '%"+searchData+"%' " +
                 "ORDER BY Login");
         storeId("SELECT idUser "+
                 "FROM Users " +
-                "WHERE Login LIKE '%"+searchData+"%' " +
+                "WHERE "+text+" LIKE '%"+searchData+"%' " +
                 "ORDER BY Login");
-        pLeft.add(bSearchUser);
-        pLeft.add(tfSearchUser);
+        setRightUsers();
     }
     // ------------- SIZE CRUD
     private void newSize() throws SQLException {
@@ -1395,17 +1660,17 @@ public class Window extends JFrame implements ActionListener {
     }
     private void searchSize() throws SQLException {
         String searchData = tfSearchSize.getText();
-        pLeft.remove(scrollPane);
+        String text = listSearchSize.get(cbSearchSize.getSelectedIndex());
+        setBG();
         showTable("SELECT name, diameter " +
                 "FROM Size " +
-                "WHERE name LIKE '%"+searchData+"%' OR diameter LIKE '%"+searchData+"%' " +
+                "WHERE "+text+" LIKE '%"+searchData+"%' " +
                 "ORDER BY name");
         storeId("SELECT idSize "+
                 "FROM Size " +
-                "WHERE name LIKE '%"+searchData+"%' OR diameter LIKE '%"+searchData+"%' " +
+                "WHERE "+text+" LIKE '%"+searchData+"%' " +
                 "ORDER BY name");
-        pLeft.add(bSearchSize);
-        pLeft.add(tfSearchSize);
+        setRightSize();
     }
     // ------------- SAUCE CRUD
     private void newSauce() throws SQLException {
@@ -1488,17 +1753,17 @@ public class Window extends JFrame implements ActionListener {
     }
     private void searchSauce() throws SQLException {
         String searchData = tfSearchSauce.getText();
-        pLeft.remove(scrollPane);
+        String text = listSearchSauce.get(cbSearchSauce.getSelectedIndex());
+        setBG();
         showTable("SELECT name, price " +
                 "FROM Sauce " +
-                "WHERE name LIKE '%"+searchData+"%' OR price LIKE '%"+searchData+"%' " +
+                "WHERE "+text+" LIKE '%"+searchData+"%' " +
                 "ORDER BY name");
         storeId("SELECT idSauce "+
                 "FROM Sauce " +
-                "WHERE name LIKE '%"+searchData+"%' OR price LIKE '%"+searchData+"%' " +
+                "WHERE "+text+" LIKE '%"+searchData+"%' " +
                 "ORDER BY name");
-        pLeft.add(bSearchSauce);
-        pLeft.add(tfSearchSauce);
+        setRightSauce();
     }
     // ------------- CATEGORY CRUD
     private void newCategory() throws SQLException {
@@ -1581,17 +1846,17 @@ public class Window extends JFrame implements ActionListener {
     }
     private void searchCategory() throws SQLException {
         String searchData = tfSearchCategory.getText();
-        pLeft.remove(scrollPane);
+        String text = listSearchCategory.get(cbSearchCategory.getSelectedIndex());
+        setBG();
         showTable("SELECT name " +
                 "FROM Category " +
-                "WHERE name LIKE '%"+searchData+"%' " +
+                "WHERE "+text+" LIKE '%"+searchData+"%' " +
                 "ORDER BY name");
         storeId("SELECT idCategory "+
                 "FROM Category " +
-                "WHERE name LIKE '%"+searchData+"%' " +
+                "WHERE "+text+" LIKE '%"+searchData+"%' " +
                 "ORDER BY name");
-        pLeft.add(bSearchCategory);
-        pLeft.add(tfSearchCategory);
+        setRightCategory();
     }
     // ------------- CONNECT WITH SQL
     private void connect() throws SQLException, ClassNotFoundException, IOException {
@@ -1768,6 +2033,12 @@ public class Window extends JFrame implements ActionListener {
                 ex.printStackTrace();
             }
             setRightCategory();
+        }else if(z==bStatistics){
+            try {
+                setStatistics();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
         }
         //USERS
         else if(z==bNewUser){
@@ -1889,6 +2160,7 @@ public class Window extends JFrame implements ActionListener {
         }else if(z==bSearchDriver){
             try {
                 searchDriver();
+                validate();
             } catch (SQLException ex) {
                 ex.printStackTrace();
             }

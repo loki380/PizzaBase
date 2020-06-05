@@ -1,5 +1,9 @@
 package models;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 public class Order {
     private Integer idCustomer;
     private Integer idDriver;
@@ -31,5 +35,12 @@ public class Order {
             return true;
         }else return false;
     }
-
+    public boolean checkData() throws ParseException {
+        Date nowDate = new Date();
+        Date choseDate = new SimpleDateFormat("yyyy-MM-dd").parse(data);
+        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd");
+        if(choseDate.compareTo(nowDate)<0){
+            return true;
+        }else return false;
+    }
 }
